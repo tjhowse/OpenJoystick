@@ -20,6 +20,7 @@ gimbal_core_z = gimbal_core_y;
 gimbal_frame_thickness = 10; 
 
 circle_faces = 20;
+$fn=circle_faces;
 
 // The 1.8 is 2sin(45)ish, the maximum y on the xy plane the core can occupy
 gimbal_frame_x = gimbal_core_x+2*gimbal_frame_thickness+2; // 2mm for washers
@@ -57,12 +58,12 @@ lever_switch_y = 6.5;
 lever_switch_z = 5.8;
 
 4_way_hat_base_dia = 18;
-4_way_hat_base_base_z = 1; // Base thickness
+4_way_hat_base_base_z = 1.5; // Base thickness
 4_way_hat_base_z = pb_xy + 4_way_hat_base_base_z;
 4_way_hat_base_screw_dia = 5;
 4_way_hat_base_screw_head_dia = 8.25;
 4_way_hat_base_screw_head_thk = 3;
-4_way_hat_wire_gap = 2;
+4_way_hat_wire_gap = 3;
 4_way_hat_cutout_z = 4_way_hat_base_z + 4_way_hat_base_screw_head_thk;
 
 // Grip sizes
@@ -87,6 +88,7 @@ joystick_head_trigger_thickness = pb_xy;
 my_layer_thickness = 0.35;
 
 joystick_big_btn_height = 12;
+joystick_big_btn_diameter = 8.0;
 joystick_big_btn_clippyness = 3;
 
 module hat_cutout(bloat)
@@ -125,16 +127,28 @@ module pb(puff, legdir)
 		// Button legs
 		if (legdir == 0)
 		{
-			translate([pb_xy/2-pb_leg_x/2,-pb_xy/2-pb_leg_y/2+zff,-pb_z/2+pb_leg_z/2])
-				cube([pb_leg_x,pb_leg_y,pb_leg_z],center=true);
-			translate([-pb_xy/2+pb_leg_x/2,-pb_xy/2-pb_leg_y/2+zff,-pb_z/2+pb_leg_z/2])
-				cube([pb_leg_x,pb_leg_y,pb_leg_z],center=true);
+			translate([0,-pb_xy/2-pb_leg_y/2+zff,-pb_z/2+pb_leg_z/2+0.8])
+				cube([pb_xy,pb_leg_y,pb_leg_z],center=true);
 		} else {
-			translate([pb_xy/2-pb_leg_x/2,-pb_xy/2+pb_leg_z/2+zff,-pb_z/2-pb_leg_y/2])
-				cube([pb_leg_x,pb_leg_z,pb_leg_y],center=true);
-			translate([-pb_xy/2+pb_leg_x/2,-pb_xy/2+pb_leg_z/2+zff,-pb_z/2-pb_leg_y/2])
-				cube([pb_leg_x,pb_leg_z,pb_leg_y],center=true);
+			translate([0,-pb_xy/2+pb_leg_z/2+zff-pb_leg_z,-pb_z/2-pb_leg_y/2+0.8])
+				cube([pb_xy,pb_leg_z,pb_leg_y],center=true);
 		}
 	}
 
 }
+
+module bolt(cap_r, cap_z, shaft_r, shaft_z)
+{
+	// Hex head bolt for holding head together
+	cylinder(r=cap_r,h=cap_z);
+	translate([0,0,cap_z]) cylinder(r=shaft_r, h=shaft_z);
+}
+
+
+
+
+
+
+
+
+

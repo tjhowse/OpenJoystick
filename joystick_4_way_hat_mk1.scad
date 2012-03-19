@@ -2,12 +2,11 @@ include <joystick_defines.scad>
 
 // See joystick_defines for most of the guts.
 
-//hat_base(4);
 //translate([0,0,10])
 //	4_way_hat_washer();
 //translate([0,0,13])
 //	switch_hat_saddle();
-	switch_hat_hanoi();
+//  switch_hat_hanoi();
 //pb(1);
 
 module hat_base(numDirs)
@@ -18,18 +17,18 @@ module hat_base(numDirs)
 		
 		translate([0,pb_total_z+(4_way_hat_base_screw_dia/2),4_way_hat_base_z-pb_xy/2+zff])
 			rotate([90,0,0])
-				pb(1.01);
+				pb(1.02,0);
 		translate([0,-pb_total_z-(4_way_hat_base_screw_dia/2),4_way_hat_base_z-pb_xy/2+zff])
 			rotate([-90,180,0])
-				pb(1.01);
+				pb(1.02,0);
 		if (numDirs==4)
 		{
 			translate([pb_total_z+(4_way_hat_base_screw_dia/2),0,4_way_hat_base_z-pb_xy/2+zff])
 				rotate([90,0,-90])
-					pb(1.01);
+					pb(1.02,0);
 			translate([-pb_total_z-(4_way_hat_base_screw_dia/2),0,4_way_hat_base_z-pb_xy/2+zff])
 				rotate([-90,180,-90])
-					pb(1.01);
+					pb(1.02,0);
 //			// Now chop the bit out of the middle
 			translate([0,0,4_way_hat_base_base_z+zff])
 				//cube([4_way_hat_base_screw_dia+2*pb_btn_z+zff,4_way_hat_base_screw_dia+2*pb_btn_z+zff,10],center=true);
@@ -46,8 +45,24 @@ module hat_base(numDirs)
 
 		// Screw
 		translate([0,0,-1])
-			cylinder(r=4_way_hat_base_screw_dia/2, h=4_way_hat_base_z*1, $fn=circle_faces);
+            union()
+            {
+                rotate([0,5,0]) cylinder(r=4_way_hat_base_screw_dia/2, h=4_way_hat_base_z*1, $fn=circle_faces);
+                rotate([0,-5,0]) cylinder(r=4_way_hat_base_screw_dia/2, h=4_way_hat_base_z*1, $fn=circle_faces);
+                rotate([5,0,0]) cylinder(r=4_way_hat_base_screw_dia/2, h=4_way_hat_base_z*1, $fn=circle_faces);
+                rotate([-5,0,0]) cylinder(r=4_way_hat_base_screw_dia/2, h=4_way_hat_base_z*1, $fn=circle_faces);
+                cylinder(r=4_way_hat_base_screw_dia/2, h=4_way_hat_base_z*1, $fn=circle_faces);
+            }
 	}		
+}
+
+module hat_voids(numDirs)
+{
+	difference()
+	{
+		cylinder(r=4_way_hat_base_dia/2, h=4_way_hat_base_z);		
+		hat_base(numDirs);
+	}
 }
 
 // Next up: build the hat that goes on top out of a series of stacking cylinders, tower of hanoi style with a 4_way_hat_base_screw_dia hole in the bottom
@@ -110,5 +125,11 @@ module 4_way_hat_washer()
 			cylinder(r=(4_way_hat_base_screw_dia/2), h = 1+2*zff, $fn=circle_faces);
 	}
 }
-	
 
+module hat_stem()
+{
+	bolt(8.5/2, 1.5, 4.5/2, 11);
+}
+	
+//hat_stem();
+//switch_hat_hanoi();
