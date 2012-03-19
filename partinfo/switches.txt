@@ -1,0 +1,9 @@
+Lever:
+MULTICOMP - DM1-01P-30-3 - MICROSWITCH, SPDT, 1A, SHORT LEVER 
+http://jaycar.com.au/productView.asp?ID=SM1036&keywords=button+switch&form=KEYWORD
+http://au.element14.com/multicomp/dm1-01p-30-3/microswitch-spdt-1a-short-lever/dp/1735364
+
+Button:
+APEM - MJTP1230A - SWITCH, TACTILE SPST, 50mA, THROUGH HOLE 
+http://jaycar.com.au/productView.asp?ID=SP0603&keywords=button+switch&form=KEYWORD
+http://au.element14.com/apem/mjtp1230a/switch-tactile-spst-50ma-through/dp/4511190?Ntt=MJTP1230A
