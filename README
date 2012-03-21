@@ -1,0 +1,5 @@
+OpenJoystick
+
+This is a project to produce a set of parametrically-described models for the purpose of 
+making a 3D-printable (FDM) joystick and throttle suitable for use in high-end flight 
+simulator HOTAS interfaces.
