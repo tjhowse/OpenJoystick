@@ -103,7 +103,7 @@ module joystick_head_trigger(hole)
 			}	
 		}
 		// Bump for pressing button
-		translate([-8.5,17,0]) cube([4,5,joystick_head_trigger_thickness]);
+		translate([-8,17,0]) cube([3.5,6,joystick_head_trigger_thickness]);
 	}
 }
 
@@ -143,7 +143,7 @@ module joystick_head_trigger_cutaway()
 					scale([1.1,1,1])
 						pb(1.01,1);
 		// Gapfilla
-		translate([0,pb_z,0]) cube([lever_switch_x+pb_xy,10,joystick_head_trigger_thickness]);
+		translate([0,pb_z,-joystick_head_trigger_thickness*0.05]) cube([lever_switch_x+pb_xy+3,10,joystick_head_trigger_thickness*1.1]);
 		
 		// Wire channels
 		translate([0,-7-5,0]) cube([lever_switch_x+pb_xy+3, 10,joystick_head_trigger_thickness]);
@@ -277,7 +277,7 @@ module joystick_head_with_boltholes(headorface)
 //joystick_head_trigger_cutaway();
 
 //joystick_head_trigger_cutaway();
-//joystick_head_trigger(1);
+joystick_head_trigger(1);
 
 
 //render() joystick_faceplate();
@@ -301,7 +301,7 @@ module joystick_head_with_boltholes(headorface)
 
 // PRINTABLE EXPORT THINGS HERE *******************
 // Just the head
-translate([0,0,17.50])
+/*translate([0,0,17.50])
 {
 	render() difference()
 	{	
@@ -317,8 +317,9 @@ translate([0,0,17.50])
 		//translate([-50,-80,-50]) cube([100,100,100]);	
 		translate([-50,-96.6,0]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-}
-translate([50,0,-0.571]) render() rotate([-45,0,0]) joystick_faceplate();
+}*/
+//translate([50,0,-0.571]) render() rotate([-45,0,0]) joystick_faceplate();
+//translate([50,0,-0.571]) render() rotate([-45,0,0]) joystick_head_with_boltholes(1);
 
 //translate([-50,-50,0]) #cube([100,100,10]);
 // Nope, that doesn't work. You've gotta export this is an STL and chunk it up separately
