@@ -137,11 +137,12 @@ module pb(puff, legdir)
 
 }
 
-module bolt(cap_r, cap_z, shaft_r, shaft_z)
+module bolt(cap_r, cap_z, shaft_r, shaft_z,slot_len)
 {
 	// Hex head bolt for holding head together
 	cylinder(r=cap_r,h=cap_z);
-	translate([0,0,cap_z]) cylinder(r=shaft_r, h=shaft_z);
+	translate([0,0,cap_z]) cylinder(r=shaft_r+0.1, h=slot_len);
+	translate([0,0,cap_z+slot_len]) cylinder(r=shaft_r, h=shaft_z-slot_len);
 }
 
 
