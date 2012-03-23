@@ -70,12 +70,12 @@ lever_switch_z = 5.8;
 grip_height = 90;
 grip_diameter = 44;
 grip_clip = 33;
-grip_rest_thickness = 6;
+grip_rest_thickness = 5;
 grip_rest_diameter = 80;
 grip_cms_height = 40;
 grip_cms_offset = -5;
 grip_cms_angle = 35;
-grip_cms_stub_length = 40;
+grip_cms_stub_length = 10;
 grip_cms_stub_diameter = 4_way_hat_base_dia + 4;
 
 grip_head_offset_x = -10;
