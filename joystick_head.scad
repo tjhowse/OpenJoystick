@@ -4,7 +4,6 @@ use <joystick_4_way_hat_mk1.scad>
 module joystick_head()
 {
 	shaft_offset = -3;
-	side_cut_y = -17;
 	
 	mode_button_z = 44.5;
 	
@@ -41,19 +40,25 @@ module joystick_head()
 		translate([6,0,0]) rotate([-90,0,0]) cylinder(r=1.5,h=34);
 		
 		//translate([0,-50,-50]) cube([100,100,100]);
-		union()
-		{
-			translate([-20,side_cut_y,-50]) rotate([-45,0,0]) scale([0.6,1,1]) cylinder(r=20,h=100);
-			translate([-32,side_cut_y,-50]) rotate([-45,0,0]) translate([0,0,50]) scale([0.6,1,1]) cube([40,40,100],true);
-		}
-		union()
-		{
-			translate([20,side_cut_y,-50]) rotate([-45,0,0]) scale([0.6,1,1]) cylinder(r=20,h=100);
-			translate([32,side_cut_y,-50]) rotate([-45,0,0]) translate([0,0,50]) scale([0.6,1,1]) cube([40,40,100],true);
-		}
+		joystick_head_sidecuts();
 	}
 	
 	//translate([0,shaft_offset,-43]) cylinder(r=(grip_diameter/2), h=26);	
+}
+
+module joystick_head_sidecuts()
+{
+	side_cut_y = -17;	
+	union()
+	{
+		translate([-20,side_cut_y,-50]) rotate([-45,0,0]) scale([0.6,1,1]) translate([0,0,-50]) cylinder(r=20,h=200);
+		translate([-32,side_cut_y,-50]) rotate([-45,0,0]) translate([0,0,50]) scale([0.6,1,1]) cube([40,40,200],true);
+	}
+	union()
+	{
+		translate([20,side_cut_y,-50]) rotate([-45,0,0]) scale([0.6,1,1]) translate([0,0,-50]) cylinder(r=20,h=200);
+		translate([32,side_cut_y,-50]) rotate([-45,0,0]) translate([0,0,50]) scale([0.6,1,1]) cube([40,40,200],true);
+	}
 }
 
 module joystick_faceplate()
@@ -307,7 +312,7 @@ module joystick_head_with_boltholes(headorface)
 
 //joystick_head_trigger_cutaway();
 //joystick_head_trigger(1);
-joystick_head_with_boltholes(0);
+render() joystick_head_with_boltholes(0);
 
 //render() joystick_faceplate();
 //joystick_head();

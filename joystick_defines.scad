@@ -68,7 +68,7 @@ lever_switch_z = 5.8;
 
 // Grip sizes
 grip_height = 90;
-grip_diameter = 40;
+grip_diameter = 44;
 grip_clip = 33;
 grip_rest_thickness = 6;
 grip_rest_diameter = 80;
