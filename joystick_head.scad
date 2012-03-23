@@ -169,7 +169,7 @@ module joystick_head_trigger_cutaway()
 		translate([0,pb_z,-joystick_head_trigger_thickness*0.05]) cube([lever_switch_x+pb_xy+3,10,joystick_head_trigger_thickness*1.1]);
 		
 		// Wire channels
-		translate([0,-7-5,0]) cube([lever_switch_x+pb_xy+3, 10,joystick_head_trigger_thickness]);
+		translate([0,-7-5+1.5,0]) cube([lever_switch_x+pb_xy+0.74, 8.5,joystick_head_trigger_thickness]);
 		//translate([12.99,-4.2,5]) #cube([6*1.476, 6, 2]);
 		translate([12.99,-4.2,5]) cube([6*1.1, 6.6, 2]);
 	}
@@ -178,7 +178,10 @@ module joystick_head_trigger_cutaway()
 	translate([0,0,-50]) cylinder(r=1.5, h = 100);
 	
 	// Hole for the return spring
-	translate([-20,4,joystick_head_trigger_thickness/2]) rotate([-90,0,0]) cylinder(r=2.05,h=18.5);
+	translate([-20,4,joystick_head_trigger_thickness/2]) rotate([-90,0,0]) cylinder(r=2.05,h=18);
+	
+	//Wire channel to base
+	translate([-25,23.7,0]) cube([30,5,joystick_head_trigger_thickness]);
 	
 }
 
@@ -304,14 +307,14 @@ module joystick_head_with_boltholes(headorface)
 
 //joystick_head_trigger_cutaway();
 //joystick_head_trigger(1);
-
+joystick_head_with_boltholes(0);
 
 //render() joystick_faceplate();
 //joystick_head();
 //joystick_head();
 //lever_switch(1, 0);
 
-//joystick_head_with_boltholes(0);
+
 //joystick_head_faceplate_negative_removal();
 //joystick_head_trigger(1);
 //joystick_big_button();
@@ -327,14 +330,14 @@ module joystick_head_with_boltholes(headorface)
 
 // PRINTABLE EXPORT THINGS HERE *******************
 // Just the head
-render()translate([0,0,17.50])
+/*render()translate([0,0,17.50])
 {
 	difference()
 	{	
 		joystick_head_with_boltholes(0);
 		translate([-50,-10,-50]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-}
+}*/
 	/*translate([0,60,-33.8426])
 	rotate([120,0,0])
 	difference()
