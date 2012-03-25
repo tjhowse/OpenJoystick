@@ -89,7 +89,7 @@ joystick_head_trigger_thickness = pb_xy;
 
 my_layer_thickness = 0.35;
 
-joystick_big_btn_height = 12;
+joystick_big_btn_height = 8;
 joystick_big_btn_diameter = 8.0;
 joystick_big_btn_clippyness = 3;
 

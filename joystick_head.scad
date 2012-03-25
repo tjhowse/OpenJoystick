@@ -223,6 +223,18 @@ module joystick_big_button()
 	}
 }
 
+module joystick_button()
+{
+	button_diameter = 10;
+	
+	lip = 0.5;
+	
+	cylinder(r=button_diameter/2,h=joystick_big_btn_height);
+	cylinder(r=button_diameter/2+lip,h=1);
+	
+}
+
+
 module joystick_big_button_cutout(legdir)
 {
 	// Button should protrude 7mm
@@ -312,7 +324,7 @@ module joystick_head_with_boltholes(headorface)
 
 //joystick_head_trigger_cutaway();
 //joystick_head_trigger(1);
-render() joystick_head_with_boltholes(0);
+//render() joystick_head_with_boltholes(0);
 
 //render() joystick_faceplate();
 //joystick_head();
@@ -323,6 +335,7 @@ render() joystick_head_with_boltholes(0);
 //joystick_head_faceplate_negative_removal();
 //joystick_head_trigger(1);
 //joystick_big_button();
+joystick_button();
 
 //joystick_big_button_cutout();
 

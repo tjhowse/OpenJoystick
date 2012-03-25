@@ -70,7 +70,7 @@ module joystick_handle()
 	translate([peg_offset_x,0,grip_height-peg_offset_z]) joystick_handle_peg();
 	
 	//translate([0,0,grip_height+23.5]) rotate([0,0,90]) joystick_head_with_boltholes(0);
-	translate([-3,0,grip_height+22.6]) rotate([0,0,90]) import("joystick_head.stl");
+	//translate([-3,0,grip_height+22.6]) rotate([0,0,90]) import("joystick_head.stl");
 }
 
 module joystick_handle_parts(half)
@@ -94,30 +94,19 @@ module joystick_handle_parts(half)
 		{
 			translate([-100,-100,split_z-100]) cube([200,200,100]);
 		}
-		translate([20,0,split_z-12]) rotate([0,-30,0]) translate([0,0,-extra_bolt+2]) bolt(3,3+extra_bolt,1.5,20,thread_len);
-		rotate([0,0,180]) translate([20,0,split_z-12]) rotate([0,-30,0]) translate([0,0,-extra_bolt+2]) bolt(3,3+extra_bolt,1.5,20,thread_len);
+		
+		// Perfectly functional, but you can't reach the bolt heads easily.
+		//translate([20,0,split_z-12]) rotate([0,-30,0]) translate([0,0,-extra_bolt+2]) #bolt(3,3+extra_bolt,1.5,20,thread_len);
+		//rotate([0,0,180]) translate([20,0,split_z-12]) rotate([0,-30,0]) translate([0,0,-extra_bolt+2]) #bolt(3,3+extra_bolt,1.5,20,thread_len);
+		
+		translate([20,0,split_z-12]) rotate([0,-30,0]) translate([0,0,-extra_bolt+2]) #bolt(3,3+extra_bolt,1.5,20,thread_len);
+		rotate([0,0,180]) translate([20,0,split_z-12]) rotate([0,-30,0]) translate([0,0,-extra_bolt+2]) #bolt(3,3+extra_bolt,1.5,20,thread_len);
 	}
 	
 	if (half == 1)
 	{
 		translate([peg_offset_x,0,split_z-peg_offset_z-2]) joystick_handle_peg();
 	}
-	/*difference()
-	{
-		translate([peg_offset_x,0,split_z-peg_offset_z])
-		union()
-		{
-			cylinder(h = peg_height, r = (shaft_dia/2));
-			
-		}
-		translate([peg_offset_x,0,split_z-peg_offset_z]) 
-			union()
-			{
-				translate([(shaft_dia/2)-2,0,peg_height/2]) cube([5,5,peg_height*2],true);
-				translate([(-shaft_dia/2)+2,0,peg_height/2]) cube([5,5,peg_height*2],true);
-				translate([0,0,-0.5]) cylinder(r=0.5,h=peg_height);
-			}
-	}*/
 }
 
 module joystick_handle_peg()
@@ -175,14 +164,12 @@ module joystick_handle_sidecuts()
 	
 	
 }
-
 module cms_stem(bolt)
 {
-	hymen_thickness = 0; // Should be your layer height * 2.
 	bolt_x = -22;
 	bolt_y = grip_cms_stub_diameter/4+1.3;
-	bolt_z = 20;
-	
+	bolt_z = 18;
+
 	if (bolt)
 	{
 		cylinder(h = grip_cms_stub_length, r = (grip_cms_stub_diameter/2));
@@ -197,7 +184,7 @@ module cms_stem(bolt)
 				{
 					cylinder(h = grip_cms_stub_length, r = (grip_cms_stub_diameter/2));
 					translate([0,0,grip_cms_stub_length-4_way_hat_base_z+zff]) hat_voids(4);
-					translate([0,0,-zff]) cylinder(h = grip_cms_stub_length-4_way_hat_base_z-(hymen_thickness-0.1), r = grip_cms_stub_diameter/2-1.5);
+					translate([0,0,-zff]) cylinder(h = grip_cms_stub_length-4_way_hat_base_z+3*zff, r = grip_cms_stub_diameter/2-1.6);
 				}
 				// Support material experiement
 				cms_stem_support(0.7);
@@ -223,11 +210,12 @@ module cms_stem_support(support_start_z)
 	
 }
 //%cube([100,100,220],true);
-//joystick_handle();
+joystick_handle();
 //joystick_handle_parts(2);
 //joystick_handle_parts(1);
 //joystick_handle_peg();
 
 //joystick_handle_sidecuts();
 //%joystick_head_sidecuts();
-cms_stem(0);
+translate([50,50,0]) cms_stem(0);
+

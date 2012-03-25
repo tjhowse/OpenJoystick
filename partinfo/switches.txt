@@ -1,3 +1,6 @@
+Full Bill of Materials:
+https://docs.google.com/spreadsheet/ccc?key=0Aq6iGQSKjhLXdHlMeURranFkTHZMZ0JFeDlSUEJDSnc
+
 Lever:
 MULTICOMP - DM1-01P-30-3 - MICROSWITCH, SPDT, 1A, SHORT LEVER 
 http://jaycar.com.au/productView.asp?ID=SM1036&keywords=button+switch&form=KEYWORD
