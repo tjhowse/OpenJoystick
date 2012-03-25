@@ -128,7 +128,7 @@ module 4_way_hat_washer()
 
 module hat_stem()
 {
-	bolt(8.5/2, 1.5, 4.5/2, 11);
+	bolt(8.5/2, 1.5, 4.5/2, 11,0);
 }
 	
 //hat_stem();

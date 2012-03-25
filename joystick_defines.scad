@@ -8,6 +8,8 @@ shaft_dia = 16;
 
 zff = 0.005;
 
+extrusion_width = 0.8; // Used for single-wall support.
+
 // Set this to 1 to translate everything to printable mode
 printable_mode = 0;
 
@@ -67,16 +69,16 @@ lever_switch_z = 5.8;
 4_way_hat_cutout_z = 4_way_hat_base_z + 4_way_hat_base_screw_head_thk;
 
 // Grip sizes
-grip_height = 90;
+grip_height = 100;
 grip_diameter = 44;
 grip_clip = 33;
 grip_rest_thickness = 5;
 grip_rest_diameter = 80;
-grip_cms_height = 40;
+grip_cms_height_offset = 50;
 grip_cms_offset = -5;
-grip_cms_angle = 35;
-grip_cms_stub_length = 10;
-grip_cms_stub_diameter = 4_way_hat_base_dia + 4;
+grip_cms_angle = 30;
+grip_cms_stub_length = 40;
+grip_cms_stub_diameter = 4_way_hat_base_dia;
 
 grip_head_offset_x = -10;
 grip_head_box_x = 4_way_hat_base_dia * 2.5;
