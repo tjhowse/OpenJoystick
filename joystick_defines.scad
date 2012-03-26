@@ -33,14 +33,17 @@ gimbal_frame_z = sqrt(pow(gimbal_core_z,2)/2) * 2 + 2; // 2 fudge to allow for c
 
 max_angle = 45; // Not much comes off this, should probably build it in more places.
 
-module bearing()
+module bearing(hole)
 {
 	difference()
 	{
-		cylinder(h=7+2*zff, r = (bearing_outside_dia/2), $fn=50);
+		cylinder(h=bearing_thickness, r = (bearing_outside_dia/2));
 
-		/*translate([0,0,-zff])
-			%cylinder(h=9, r = (bearing_inside_dia/2), $fn=50);*/
+		if (hole)
+		{
+			translate([0,0,-zff])
+				cylinder(h=9, r = (bearing_inside_dia/2));
+		}
 	}
 }
 
@@ -79,6 +82,7 @@ grip_cms_offset = -5;
 grip_cms_angle = 30;
 grip_cms_stub_length = 40;
 grip_cms_stub_diameter = 4_way_hat_base_dia;
+grip_cms_twist = 20;
 
 grip_head_offset_x = -10;
 grip_head_box_x = 4_way_hat_base_dia * 2.5;
@@ -143,7 +147,7 @@ module bolt(cap_r, cap_z, shaft_r, shaft_z,slot_len)
 {
 	// Hex head bolt for holding head together
 	cylinder(r=cap_r,h=cap_z);
-	translate([0,0,cap_z]) cylinder(r=shaft_r+0.1, h=slot_len);
+	translate([0,0,cap_z]) cylinder(r=shaft_r+0.15, h=slot_len);
 	translate([0,0,cap_z+slot_len]) cylinder(r=shaft_r, h=shaft_z-slot_len);
 }
 

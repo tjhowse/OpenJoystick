@@ -277,7 +277,6 @@ module joystick_head_faceplate_negative_removal()
 		translate([0,0,-zff-4_way_hat_base_z+1-cutout_depth]) scale([1,1.1,1]) cylinder(r=20,h=cutout_depth);
 		translate([-13,4,-zff-4_way_hat_base_z+1-cutout_depth]) cube([6,6,cutout_depth-1]);		
 	}
-	
 }
 
 module joystick_head_with_boltholes(headorface)
@@ -299,8 +298,8 @@ module joystick_head_with_boltholes(headorface)
 					joystick_head();
 					translate([0,8-trigger_guard_bolts_extra_distance,-5])
 					{
-						rotate([270,0,0]) translate([6,0,-7.1]) bolt(3,3+trigger_guard_bolts_extra_distance,1.5,20,13);
-						rotate([270,0,0]) translate([-6,0,-7.1]) bolt(3,3+trigger_guard_bolts_extra_distance,1.5,20,13);
+						rotate([270,0,0]) translate([6,0,-7.1]) bolt(3,3+trigger_guard_bolts_extra_distance,1.45,20,13);
+						rotate([270,0,0]) translate([-6,0,-7.1]) bolt(3,3+trigger_guard_bolts_extra_distance,1.45,20,13);
 					}
 				}
 			}
@@ -310,8 +309,8 @@ module joystick_head_with_boltholes(headorface)
 			}
 		}
 		//bolt(cap_r, cap_z, shaft_r, shaft_z)
-		rotate([225,0,0]) translate([0,-17,-7.1]) bolt(3,3,1.5,10,6.7);
-		rotate([225,0,0]) translate([0,7,-7.1]) bolt(3,3,1.5,10,6.7);	
+		rotate([225,0,0]) translate([0,-17,-7.1]) bolt(3,3,1.45,10,6.7);
+		rotate([225,0,0]) translate([0,7,-7.1]) bolt(3,3,1.45,10,6.7);	
 		
 	}
 }

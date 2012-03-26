@@ -126,10 +126,11 @@ module 4_way_hat_washer()
 	}
 }
 
-module hat_stem()
+module hat_stem(height)
 {
-	bolt(8.5/2, 1.5, 4.5/2, 11,0);
+	bolt(8.5/2, 1.5, 4.5/2, height,0);
 }
 	
-//hat_stem();
+//hat_stem(11); // Face hats
+hat_stem(23); // CMS
 //switch_hat_hanoi();
