@@ -72,15 +72,21 @@ module joystick_inner_gimbal()
 			//cueb!
 			
 			// Spring support stems
-			translate([total_x/2-5, -total_y/2-5, -2.5]) cube([5,springbar_z,5]);
-			translate([-total_x/2, -total_y/2-5, -2.5]) cube([5,springbar_z,5]);
-			
-			translate([total_x/2-5, -total_y/2-5, -2.5]) rotate([-45,0,0]) cube([5,springbar_z*sqrt(2),5]);
-			
-			translate([-total_x/2, -total_y/2-5, -2.5]) rotate([-45,0,0]) cube([5,springbar_z*sqrt(2),5]);
+			translate([0,0,springbar_offset]) union()
+			{
+				translate([total_x/2-5, -total_y/2-5, -2.5]) cube([5,springbar_z,5]);
+				translate([-total_x/2, -total_y/2-5, -2.5]) cube([5,springbar_z,5]);
+				
+				translate([total_x/2-5, -total_y/2-5, -2.5]) rotate([-45,0,0]) cube([5,springbar_z*sqrt(2),5]);
+				
+				translate([-total_x/2, -total_y/2-5, -2.5]) rotate([-45,0,0]) cube([5,springbar_z*sqrt(2),5]);
+			}
 		}
-		translate([total_x/2-2.5, -total_y/2-16.5, 0]) rotate([-90,0,0]) bolt(3,3,1.45,20,0);
-		translate([-total_x/2+2.5, -total_y/2-16.5, 0]) rotate([-90,0,0]) bolt(3,3,1.45,20,0);
+		translate([0,0,springbar_offset]) union()
+		{
+			translate([total_x/2-2.5, -total_y/2-16.5, 0]) rotate([-90,0,0]) bolt(3,3,1.45,20,0);
+			translate([-total_x/2+2.5, -total_y/2-16.5, 0]) rotate([-90,0,0]) bolt(3,3,1.45,20,0);
+		}
 	}	
 }
 
@@ -101,23 +107,25 @@ module joystick_stem_plug(lip_size)
 
 module joystick_stem_plug_springbar()
 {
+	// Keeping this in place for now.
+	springbar_offset_old = 0;
 	difference()
 	{
 		union()
 		{
 			joystick_stem_plug(springbar_z);
-			translate([0,0,springbar_z/2]) cube([springbar_offset,springbar_y/2,springbar_z],true);	
-			translate([springbar_offset,0,springbar_z/2]) cube([springbar_x,springbar_y,springbar_z],true);	
+			translate([0,0,springbar_z/2]) cube([springbar_offset_old,springbar_y/2,springbar_z],true);	
+			translate([springbar_offset_old,0,springbar_z/2]) cube([springbar_x,springbar_y,springbar_z],true);	
 		}
 		translate([0,0,-zff]) bolt(3,3,1.45,20,springbar_z-3+2*zff);
-		translate([springbar_offset,-springbar_y/2+4,-10]) bolt(3,3,1.45,20,0);
-		translate([springbar_offset,springbar_y/2-4,-10]) bolt(3,3,1.45,20,0);
+		translate([springbar_offset_old,-springbar_y/2+4,-10]) bolt(3,3,1.45,20,0);
+		translate([springbar_offset_old,springbar_y/2-4,-10]) bolt(3,3,1.45,20,0);
 	}
 }
 
 //translate([0,inner_gimbal_y/2+4+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,90]) joystick_stem_plug(4);
-//rotate([0,0,180]) translate([0,inner_gimbal_y/2+springbar_z+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,-90]) joystick_stem_plug_springbar();
-joystick_stem_plug_springbar();
+rotate([0,0,180]) translate([0,inner_gimbal_y/2+springbar_z+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,-90]) joystick_stem_plug_springbar();
+//joystick_stem_plug_springbar();
 //translate([13,0,0]) joystick_stem_plug(4);
 //translate([0,0,-joiner_z/2]) joystick_joiner();
-//joystick_inner_gimbal();
+joystick_inner_gimbal();
