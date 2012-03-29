@@ -33,11 +33,11 @@ gimbal_frame_z = sqrt(pow(gimbal_core_z,2)/2) * 2 + 2; // 2 fudge to allow for c
 
 max_angle = 45; // Not much comes off this, should probably build it in more places.
 
-module bearing(hole)
+module bearing(hole,outer_puff)
 {
 	difference()
 	{
-		cylinder(h=bearing_thickness, r = (bearing_outside_dia/2));
+		cylinder(h=bearing_thickness, r = (bearing_outside_dia/2)+outer_puff);
 
 		if (hole)
 		{
