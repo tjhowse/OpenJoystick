@@ -72,8 +72,7 @@ module joystick_joiner()
 
 module joystick_inner_gimbal()
 {
-	screwhole_support = 5;
-
+	extra_height_on_screwholes = 1;
 	difference()
 	{
 		union()
@@ -104,17 +103,17 @@ module joystick_inner_gimbal()
 				translate([springsupport_separation/2-2.5, -inner_gimbal_total_y/2-5, -2.5]) rotate([-45,0,0]) cube([5,springbar_z*sqrt(2),5]);
 				translate([-springsupport_separation/2-2.5, -inner_gimbal_total_y/2-5, -2.5]) rotate([-45,0,0]) cube([5,springbar_z*sqrt(2),5]);
 			
-				translate([inner_gimbal_total_x/2, springsupport_separation/2-2.5, -2.5]) cube([springbar_z,5,5]);				
+				translate([inner_gimbal_total_x/2, springsupport_separation/2-2.5, -2.5]) cube([springbar_z,5,5+extra_height_on_screwholes]);	
 				translate([inner_gimbal_total_x/2, springsupport_separation/2-2.5, -7.5]) rotate([0,-45,0]) cube([springbar_z*sqrt(2),5,5]);
 				
-				translate([inner_gimbal_total_x/2, -springsupport_separation/2-2.5, -2.5]) cube([springbar_z,5,5]);				
+				translate([inner_gimbal_total_x/2, -springsupport_separation/2-2.5, -2.5]) cube([springbar_z,5,5+extra_height_on_screwholes]);				
 				translate([inner_gimbal_total_x/2, -springsupport_separation/2-2.5, -7.5]) rotate([0,-45,0]) cube([springbar_z*sqrt(2),5,5]);
 			}
 			translate([inner_gimbal_total_x/2-(inner_gimbal_total_x-springsupport_separation)/2+2.5, -springsupport_separation/2-2.5, -inner_gimbal_z/2])
-				cube([(inner_gimbal_total_x-springsupport_separation)/2-2.5,(springsupport_separation-inner_gimbal_total_y)/2+2.5,springbar_offset+inner_gimbal_z/2+2.5]);
+				cube([(inner_gimbal_total_x-springsupport_separation)/2-2.5,(springsupport_separation-inner_gimbal_total_y)/2+2.5,springbar_offset+inner_gimbal_z/2+2.5+extra_height_on_screwholes]);
 
 			translate([inner_gimbal_total_x/2-(inner_gimbal_total_x-springsupport_separation)/2+2.5, springsupport_separation/2-5, -inner_gimbal_z/2])
-				cube([(inner_gimbal_total_x-springsupport_separation)/2-2.5,(springsupport_separation-inner_gimbal_total_y)/2+2.5,springbar_offset+inner_gimbal_z/2+2.5]);
+				cube([(inner_gimbal_total_x-springsupport_separation)/2-2.5,(springsupport_separation-inner_gimbal_total_y)/2+2.5,springbar_offset+inner_gimbal_z/2+2.5+extra_height_on_screwholes]);
 
 		}
 		translate([0,0,springbar_offset]) union()
@@ -144,17 +143,19 @@ module joystick_base()
 	base_x = inner_gimbal_total_x - bearing_thickness*2 - bearing_retain_thickness*2-inner_gimbal_clearance;
 	base_y = inner_gimbal_total_y + mounting_extra_y;
 	base_z = 5;
+	
+	suport_stem_beef = 1;
 
 	translate([base_x/2-spar_width,-base_y/2,0]) cube([spar_width,base_y,base_z]);
 	translate([-base_x/2,-base_y/2,0]) cube([spar_width,base_y,base_z]);
 	
 	translate([-(base_x+2*spar_width)/2,-spar_width/2,0]) cube([base_x+2*spar_width,spar_width,base_z]);
 	
-	translate([-base_x/2,-spar_width/2,base_z]) 
+	translate([-base_x/2,-spar_width/2-suport_stem_beef/2,base_z]) 
 		difference()
 		{
-			cube([spar_width,spar_width, base_support_height]);
-			translate([-zff,spar_width/2-joiner_peg_xy/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
+			cube([spar_width,spar_width+suport_stem_beef, base_support_height+suport_stem_beef]);
+			translate([-zff,spar_width/2-joiner_peg_xy/2+suport_stem_beef/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
 			union()
 			{
 				cube([joiner_peg_z,joiner_peg_xy, joiner_peg_xy]);
@@ -162,11 +163,11 @@ module joystick_base()
 			}
 		}
 	
-	translate([base_x/2-spar_width,-spar_width/2,base_z])
+	translate([base_x/2-spar_width,-spar_width/2-suport_stem_beef/2,base_z])
 		difference()
 		{
-			cube([spar_width,spar_width, base_support_height]);
-			translate([spar_width/2+zff,spar_width/2-joiner_peg_xy/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
+			cube([spar_width,spar_width+suport_stem_beef, base_support_height+suport_stem_beef]);
+			translate([spar_width/2+zff,spar_width/2-joiner_peg_xy/2+suport_stem_beef/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
 			union()
 			{
 				cube([joiner_peg_z,joiner_peg_xy, joiner_peg_xy]);
@@ -216,11 +217,12 @@ module joystick_stem_plug_springbar()
 //translate([30,0,0]) joystick_stem_plug_springbar();
 //translate([13,0,0]) joystick_stem_plug(2);
 
-/*
-test_x = 20;
-test_y = 20;
+
+/*test_x = 10;
+test_y = 10;
 translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) rotate([0,test_y,0]) translate([0,0,-5]) joystick_joiner();
 translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) joystick_inner_gimbal();
-*/
+joystick_base();*/
+
 translate([0,50,0]) joystick_base();
-translate([0,0,inner_gimbal_z/2]) joystick_inner_gimbal();
+//translate([0,0,inner_gimbal_z/2]) joystick_inner_gimbal();
