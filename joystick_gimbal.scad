@@ -30,8 +30,10 @@ joiner_peg_z = 5;
 joiner_peg_xy = bearing_inside_dia / sqrt(2);
 
 base_support_height = 25;
-
 inner_gimbal_clearance = 2;
+
+magnet_d = 10;
+magnet_z = 5;
 
 // A little bit of extra clearance on the springbar to allow for clearance of the bolts internally.
 // on the inner gimbal.
@@ -199,7 +201,7 @@ module joystick_base()
 	
 }
 
-module joystick_stem_plug(lip_size)
+module joystick_stem_plug(lip_size, extrapeg)
 {	
 	
 	difference()
@@ -208,14 +210,14 @@ module joystick_stem_plug(lip_size)
 		{
 			translate([0,0,lip_size]) cylinder(r=bearing_inside_dia/2-0.05,h=bearing_thickness);
 			cylinder(r=bearing_inside_dia/2+1,h=lip_size);
-			rotate([0,0,90]) translate([-(joiner_peg_xy)/2,-(joiner_peg_xy)/2, bearing_thickness+lip_size]) cube([(joiner_peg_xy),(joiner_peg_xy),joiner_peg_z]);
+			rotate([0,0,90]) translate([-(joiner_peg_xy)/2,-(joiner_peg_xy)/2, bearing_thickness+lip_size]) cube([(joiner_peg_xy),(joiner_peg_xy),joiner_peg_z+extrapeg]);
 		}
 		translate([0,0,-zff]) bolt(3,3,1.45,20,0);
 	}
 	//joiner_z
 }
 
-module joystick_stem_plug_springbar()
+module joystick_stem_plug_springbar(extrapeg)
 {
 	// Keeping this in place for now.
 	springbar_offset_old = 0;
@@ -223,7 +225,7 @@ module joystick_stem_plug_springbar()
 	{
 		union()
 		{
-			joystick_stem_plug(springbar_z);
+			joystick_stem_plug(springbar_z,extrapeg);
 			translate([0,0,springbar_z/2]) cube([springbar_offset_old,springbar_y/2,springbar_z],true);	
 			translate([springbar_offset_old,0,springbar_z/2]) cube([springbar_x,springbar_y,springbar_z],true);	
 		}
@@ -233,10 +235,21 @@ module joystick_stem_plug_springbar()
 	}
 }
 
+module temp_stem_extender()
+{
+	difference()
+	{
+		scale([1,1,(1/1.4)*0.7]) joystick_handle_peg(0);
+		translate([0,0,7-magnet_z+zff]) cylinder(r=magnet_d/2+0.2, h=magnet_z);
+	}
+}
+
 //translate([0,inner_gimbal_y/2+4+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,90]) joystick_stem_plug(4);
 //rotate([0,0,180]) translate([0,inner_gimbal_y/2+springbar_z+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,-90]) joystick_stem_plug_springbar();
-//translate([30,0,0]) joystick_stem_plug_springbar();
-//translate([13,0,0]) joystick_stem_plug(2);
+//translate([30,0,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
+//translate([13,0,0]) joystick_stem_plug(2,inner_gimbal_clearance);
+
+temp_stem_extender();
 
 
 /*test_x = 10;
@@ -246,4 +259,4 @@ translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) jo
 joystick_base();*/
 
 //translate([0,50,0]) joystick_base();
-translate([0,0,inner_gimbal_z/2]) joystick_inner_gimbal();
+//translate([0,0,inner_gimbal_z/2]) joystick_inner_gimbal();

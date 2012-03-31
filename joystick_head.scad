@@ -3,7 +3,9 @@ use <joystick_4_way_hat_mk1.scad>
 
 module joystick_head()
 {
-	shaft_offset = -3;
+	//shaft_offset = -3;
+	shaft_offset = -6;
+	
 	
 	mode_button_z = 44.5;
 	
@@ -186,7 +188,7 @@ module joystick_head_trigger_cutaway()
 	translate([-20,4,joystick_head_trigger_thickness/2]) rotate([-90,0,0]) cylinder(r=2.05,h=18);
 	
 	//Wire channel to base
-	translate([-25,23.7,0]) cube([30,5,joystick_head_trigger_thickness]);
+	translate([-25,23.7,0]) cube([30,4,joystick_head_trigger_thickness]);
 	
 }
 
@@ -310,7 +312,7 @@ module joystick_head_with_boltholes(headorface)
 		}
 		//bolt(cap_r, cap_z, shaft_r, shaft_z)
 		rotate([225,0,0]) translate([0,-17,-7.1]) bolt(3,3,1.45,10,6.7);
-		rotate([225,0,0]) translate([0,7,-7.1]) bolt(3,3,1.45,10,6.7);	
+		rotate([225,0,0]) translate([0,7,-7.1]) bolt(3,3,1.45,13,6.7);	
 		
 	}
 }
@@ -334,7 +336,7 @@ module joystick_head_with_boltholes(headorface)
 //joystick_head_faceplate_negative_removal();
 //joystick_head_trigger(1);
 //joystick_big_button();
-joystick_button();
+//joystick_button();
 
 //joystick_big_button_cutout();
 
@@ -354,8 +356,8 @@ joystick_button();
 		joystick_head_with_boltholes(0);
 		translate([-50,-10,-50]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-}*/
-	/*translate([0,60,-33.8426])
+
+	translate([0,60,-33.8426])
 	rotate([120,0,0])
 	difference()
 	{
@@ -369,5 +371,5 @@ joystick_button();
 
 //translate([-50,-50,0]) #cube([100,100,10]);
 // Nope, that doesn't work. You've gotta export this is an STL and chunk it up separately
-//render() joystick_head_with_boltholes(0);
+render() joystick_head_with_boltholes(0);
 // PRINTABLE EXPORT THINGS HERE *******************

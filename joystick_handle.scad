@@ -4,62 +4,66 @@ use <joystick_head.scad>
 
 peg_height = 14;
 
-
 module joystick_handle()
 {
 	trigger_cutout_z = 20;
 	trigger_cutout_x = 6.7;
 	peg_offset_z = 5;
-	head_offset_x = 0;
+	head_offset_x = -3;
 	
-	difference()
+	mirror([0,left_handed,0]) union()
 	{
-		union()
+		difference()
 		{
-			translate([0,0,grip_rest_thickness])
-				difference()
-				{
-					scale([1,0.7,1]) cylinder(h = grip_height, r = (grip_diameter/2));
-					//translate([-15,0,90]) rotate([0,-45,0]) translate([0,0,-50]) scale([1,0.7,1]) cylinder(h = grip_height, r = (grip_diameter/2));
-					//translate([0,0,grip_height/2])cube([grip_diameter,grip_clip,grip_height],true); 
-					translate([head_offset_x-4.5,0,grip_height]) rotate([0,-20,0]) translate([0,0,-50]) difference()
+			union()
+			{
+				translate([0,0,grip_rest_thickness])
+					difference()
 					{
-						translate([0,-50,0]) cube([100,100,100]);
 						scale([1,0.7,1]) cylinder(h = grip_height, r = (grip_diameter/2));
+						//translate([-15,0,90]) rotate([0,-45,0]) translate([0,0,-50]) scale([1,0.7,1]) cylinder(h = grip_height, r = (grip_diameter/2));
+						//translate([0,0,grip_height/2])cube([grip_diameter,grip_clip,grip_height],true); 
+						translate([head_offset_x-4.5,0,grip_height]) rotate([0,-20,0]) translate([0,0,-50]) difference()
+						{
+							translate([0,-50,0]) cube([100,100,100]);
+							scale([1,0.7,1]) cylinder(h = grip_height, r = (grip_diameter/2));
+						}
 					}
-				}
-			translate([10,10,0]) scale([1.2,1,1]) cylinder(h = grip_rest_thickness, r = (grip_rest_diameter / 2));
-			//translate([peg_offset_x,0,grip_height-peg_offset_z]) cylinder(h = peg_height, r = (shaft_dia/2));
-			
-			
-			}
-		// Subtract hole through centre.
-		translate([0,0,-zff])
-			cylinder(h = (grip_height + grip_rest_thickness+ 2 * zff), r = (shaft_dia/2));
-		
-		translate([0,grip_cms_offset,grip_height-grip_cms_height_offset]) // I should be more clever about this.
-				rotate([grip_cms_angle,0,0])
-				union()
-				{
-					scale([1.05,1.05,0]) cms_stem(1);
-					//%cms_stem(0);
-				}			
+				translate([10,10,0]) scale([1.2,1,1]) cylinder(h = grip_rest_thickness, r = (grip_rest_diameter / 2));
+				//translate([peg_offset_x,0,grip_height-peg_offset_z]) cylinder(h = peg_height, r = (shaft_dia/2));
 				
-		//translate([0,0,grip_height+23.5]) rotate([0,0,90]) joystick_head_sidecuts();
-		//translate([0,0,grip_height]) rotate([0,0,90]) #joystick_handle_sidecuts();
-		translate([head_offset_x,0,grip_height+23.5]) rotate([0,0,90]) joystick_handle_sidecuts();
+				
+				}
+			// Subtract hole through centre.
+			translate([0,0,-zff])
+				cylinder(h = (grip_height + grip_rest_thickness+ 2 * zff), r = (shaft_dia/2));
+			
+			translate([0,grip_cms_offset,grip_height-grip_cms_height_offset]) // I should be more clever about this.
+					rotate([grip_cms_angle,0,0])
+					union()
+					{
+						scale([1.05,1.05,0]) cms_stem(1);
+						//%cms_stem(0);
+					}			
+					
+			//translate([0,0,grip_height+23.5]) rotate([0,0,90]) joystick_head_sidecuts();
+			//translate([0,0,grip_height]) rotate([0,0,90]) #joystick_handle_sidecuts();
+			translate([head_offset_x,0,grip_height+23.5]) rotate([0,0,90]) joystick_handle_sidecuts();
+			
+			// Trigger cutout
+			/*translate([-(grip_diameter/2),0,grip_height-trigger_cutout_z+10]) union()
+			{
+				cylinder(r=trigger_cutout_x/2+1,h=trigger_cutout_z);
+				translate([1,0,trigger_cutout_z/2]) cube([trigger_cutout_x,trigger_cutout_x,trigger_cutout_z],true);
+			}*/
+			translate([22,0,10]) rotate([0,-90,0]) bolt(3,13,1.45,20,0);
+		}
+		translate([0,0,grip_height-peg_offset_z]) joystick_handle_peg(1);
 		
-		// Trigger cutout
-		/*translate([-(grip_diameter/2),0,grip_height-trigger_cutout_z+10]) union()
-		{
-			cylinder(r=trigger_cutout_x/2+1,h=trigger_cutout_z);
-			translate([1,0,trigger_cutout_z/2]) cube([trigger_cutout_x,trigger_cutout_x,trigger_cutout_z],true);
-		}*/
-		translate([22,0,10]) rotate([0,-90,0]) bolt(3,13,1.45,20,0);
+		
+		translate([head_offset_x-3,0,grip_height+22.6]) rotate([0,0,90]) joystick_head_with_boltholes(2);
+		translate([0,grip_cms_offset,grip_height-grip_cms_height_offset]) rotate([grip_cms_angle,0,0]) cms_stem(0);
 	}
-	translate([head_offset_x,0,grip_height-peg_offset_z]) joystick_handle_peg(1);
-	
-	//translate([0,0,grip_height+23.5]) rotate([0,0,90]) joystick_head_with_boltholes(0);
 	//translate([head_offset_x-3,0,grip_height+22.6]) rotate([0,0,90]) import("joystick_head.stl");
 	//translate([head_offset_x-3,0,grip_height+22.6]) rotate([0,0,90]) import("joystick_head_noface.stl");
 }
@@ -205,9 +209,12 @@ module cms_stem_support(support_start_z)
 	
 }
 //%cube([100,100,220],true);
-//joystick_handle();
+
+left_handed = 1;
+joystick_handle();
+
 //joystick_handle_parts(2);
-joystick_handle_parts(1);
+//joystick_handle_parts(1);
 //joystick_handle_peg();
 
 //joystick_handle_sidecuts();
