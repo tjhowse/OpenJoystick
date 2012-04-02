@@ -235,6 +235,17 @@ module joystick_stem_plug_springbar(extrapeg)
 	}
 }
 
+module joystick_y_padding_washer()
+{
+	washer_dia = 10;
+	
+	difference()
+	{
+		cylinder(r=washer_dia/2, h=bearing_retain_thickness+inner_gimbal_clearance/2);
+		cube([joiner_peg_xy,joiner_peg_xy,100],true);
+	}
+}
+
 module temp_stem_extender()
 {
 	difference()
@@ -244,17 +255,23 @@ module temp_stem_extender()
 	}
 }
 
-//translate([0,inner_gimbal_y/2+4+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,90]) joystick_stem_plug(4);
-//rotate([0,0,180]) translate([0,inner_gimbal_y/2+springbar_z+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,-90]) joystick_stem_plug_springbar();
-//translate([30,0,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
+//translate([0,inner_gimbal_y/2+4+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,90]) joystick_stem_plug(4,0);
+//rotate([0,0,180]) translate([0,inner_gimbal_y/2+springbar_z+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,-90]) joystick_stem_plug_springbar(inner_gimbal_clearance);
+translate([30,0,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
 //translate([13,0,0]) joystick_stem_plug(2,inner_gimbal_clearance);
 
-temp_stem_extender();
+//temp_stem_extender();
 
+//joystick_y_padding_washer();
 
-/*test_x = 10;
-test_y = 10;
+/*test_x = 0;
+test_y = 0;
 translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) rotate([0,test_y,0]) translate([0,0,-5]) joystick_joiner();
+translate([springbar_z+inner_gimbal_total_x/2,0,inner_gimbal_z/2+base_support_height-12.5]) rotate([0,-90,0]) union()
+{
+	joystick_stem_plug_springbar(inner_gimbal_clearance);
+	translate([0,0,joiner_peg_z+bearing_thickness]) #joystick_y_padding_washer();
+}
 translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) joystick_inner_gimbal();
 joystick_base();*/
 
