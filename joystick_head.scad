@@ -16,8 +16,7 @@ module joystick_head()
 		union()
 		{
 			scale([0.7,1,0.6]) sphere(r=37);
-			translate([0,mode_button_z-10,0]) rotate([-90,0,0]) cylinder(r=6,h=6);
-			
+			translate([0,mode_button_z-10,0]) rotate([-90,0,0]) cylinder(r=7,h=6);			
 		}
 
 		//translate([20,0,10])rotate([45,0,0]) joystick_head_faceclip();
@@ -32,14 +31,20 @@ module joystick_head()
 		{
 			difference()
 			{
-				joystick_big_button_cutout(0);
+				union()
+				{
+					translate([0,0,-4]) scale([1.1,1.1,1]) joystick_big_button_cutout(1);
+					//translate([0,-4,-joystick_big_btn_height-pb_z+1]) #cube([pb_xy,3,2],true);
+					translate([0,-pb_xy/2-pb_leg_z/2,-joystick_big_btn_height-pb_z+pb_z-0.5]) cube([pb_xy,pb_leg_z*1.5,pb_z],true);
+					translate([0,-3,-joystick_big_btn_height-pb_z+1]) rotate([-30,0,0]) translate([0,0,-5.5]) cylinder(r=1.5,h=6.5);
+				}
 				translate([-5,-15.5,-11]) cube([10,10,10]);
 			}
-			translate([-3,-6.3,-11]) cube([6,6,1]);
+			//#translate([-3,-6,-11]) cube([6,6,1]);
 		}
 		
 		// Channel for mode button wires
-		translate([6,0,0]) rotate([-90,0,0]) cylinder(r=1.5,h=34);
+		translate([6,0,0]) rotate([-90,0,0]) cylinder(r=1.5,h=33);
 		
 		//translate([0,-50,-50]) cube([100,100,100]);
 		joystick_head_sidecuts();
@@ -252,6 +257,10 @@ module joystick_big_button_cutout(legdir)
 	}
 }
 
+module joystick_button2()
+{
+}	
+
 module joystick_head_faceplate_cutout()
 {
 	offset_x = -10.2;
@@ -338,7 +347,9 @@ module joystick_head_with_boltholes(headorface)
 //joystick_big_button();
 //joystick_button();
 
-//joystick_big_button_cutout();
+joystick_button2();
+
+//joystick_big_button_cutout(1);
 
 //joystick_head_faceplate_cutout();
 //joystick_head_faceplate_negative_removal();
@@ -346,6 +357,8 @@ module joystick_head_with_boltholes(headorface)
 //hat_cutout(1.05);
 
 //joystick_head_faceclip();
+//translate([0,0,-4]) joystick_big_button_cutout(1);
+//translate([0,-pb_xy/2-pb_leg_z/2,-joystick_big_btn_height-pb_z+pb_z-0.5]) cube([pb_xy,pb_leg_z*1.5,pb_z],true);
 
 // PRINTABLE EXPORT THINGS HERE *******************
 // Just the head
@@ -356,7 +369,9 @@ module joystick_head_with_boltholes(headorface)
 		joystick_head_with_boltholes(0);
 		translate([-50,-10,-50]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-
+*/
+/*render()
+{
 	translate([0,60,-33.8426])
 	rotate([120,0,0])
 	difference()
@@ -367,9 +382,10 @@ module joystick_head_with_boltholes(headorface)
 		translate([-50,-96.6,0]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
 }*/
+
 //translate([50,0,-0.571]) render() rotate([-45,0,0]) joystick_head_with_boltholes(1);
 
 //translate([-50,-50,0]) #cube([100,100,10]);
 // Nope, that doesn't work. You've gotta export this is an STL and chunk it up separately
-render() joystick_head_with_boltholes(0);
+//render() joystick_head_with_boltholes(0);
 // PRINTABLE EXPORT THINGS HERE *******************
