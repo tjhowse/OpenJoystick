@@ -1,6 +1,10 @@
 include <joystick_defines.scad>
 use <joystick_4_way_hat_mk1.scad>
 
+button2_diameter = 9.5;
+button2_height = 8.5;	
+button2_lip = 0.7;
+
 module joystick_head()
 {
 	//shaft_offset = -3;
@@ -251,15 +255,29 @@ module joystick_big_button_cutout(legdir)
 	translate([0,0,-joystick_big_btn_height+pb_btn_z])
 	union()
 	{
-		translate([0,0,pb_z]) cylinder(r=4.8,h=joystick_big_btn_height+2,$fn=circle_faces);
-		translate([0,0,pb_z]) cylinder(r=5.2,h=1+pb_btn_z,$fn=circle_faces);
+		%translate([0,0,pb_z]) cylinder(r=4.8,h=joystick_big_btn_height+2,$fn=circle_faces);
+		%translate([0,0,pb_z]) cylinder(r=5.2,h=1+pb_btn_z,$fn=circle_faces);
 		pb(1.01,legdir);
 	}
 }
 
 module joystick_button2()
 {
+	cylinder(r=button2_diameter/2,h=button2_height);
+	
+	translate([0,0,3]) cylinder(r1=button2_diameter/2, r2=button2_diameter/2+button2_lip,h=button2_lip);
+	translate([0,0,3+button2_lip]) cylinder(r2=button2_diameter/2, r1=button2_diameter/2+button2_lip,h=button2_lip);
 }	
+
+module joystick_button2_sleve()
+{
+	difference()
+	{
+		cylinder(r=button2_diameter/2+2.2, h=3);
+		cylinder(r=button2_diameter/2+0.3, h=3);
+		translate([0,0,button2_lip*2]) cylinder(r=button2_diameter/2+button2_lip+0.3, h=3);
+	}		
+}
 
 module joystick_head_faceplate_cutout()
 {
@@ -347,7 +365,9 @@ module joystick_head_with_boltholes(headorface)
 //joystick_big_button();
 //joystick_button();
 
-joystick_button2();
+//translate([10,0,-3]) 
+//joystick_button2();
+translate([0,0,2])joystick_button2_sleve();
 
 //joystick_big_button_cutout(1);
 
