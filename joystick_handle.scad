@@ -31,8 +31,6 @@ module joystick_handle()
 					}
 				translate([10,10,0]) scale([1.2,1,1]) cylinder(h = grip_rest_thickness, r = (grip_rest_diameter / 2));
 				//translate([peg_offset_x,0,grip_height-peg_offset_z]) cylinder(h = peg_height, r = (shaft_dia/2));
-				
-				
 				}
 			// Subtract hole through centre.
 			translate([0,0,-zff])
@@ -45,11 +43,14 @@ module joystick_handle()
 						scale([1.05,1.05,0]) cms_stem(1);
 						//%cms_stem(0);
 					}			
-					
+				
 			//translate([0,0,grip_height+23.5]) rotate([0,0,90]) joystick_head_sidecuts();
 			//translate([0,0,grip_height]) rotate([0,0,90]) #joystick_handle_sidecuts();
-			translate([head_offset_x,0,grip_height+23.5]) rotate([0,0,90]) joystick_handle_sidecuts();
+			translate([head_offset_x-2,0,grip_height+23.5]) rotate([0,0,90]) joystick_handle_sidecuts();
 			
+			rotate([0,0,90])translate([headbolt_x,headbolt_y-head_offset_x+3,headbolt_z+headbolt_extra+grip_height+21.5]) rotate([180,0,0]) bolt(3,3+headbolt_extra,1.45,20,0);
+			rotate([0,0,90])translate([-headbolt_x,headbolt_y-head_offset_x+3,headbolt_z+headbolt_extra+grip_height+21.5]) rotate([180,0,0]) bolt(3,3+headbolt_extra,1.45,20,0);
+					
 			// Trigger cutout
 			/*translate([-(grip_diameter/2),0,grip_height-trigger_cutout_z+10]) union()
 			{
@@ -61,7 +62,7 @@ module joystick_handle()
 		translate([0,0,grip_height-peg_offset_z]) joystick_handle_peg(1);
 		
 		
-		translate([head_offset_x-3,0,grip_height+22.6]) rotate([0,0,90]) joystick_head_with_boltholes(2);
+		//translate([head_offset_x-3,0,grip_height+22.6]) rotate([0,0,90]) joystick_head_with_boltholes(0);
 		translate([0,grip_cms_offset,grip_height-grip_cms_height_offset]) rotate([grip_cms_angle,0,0]) cms_stem(0);
 	}
 	//translate([head_offset_x-3,0,grip_height+22.6]) rotate([0,0,90]) import("joystick_head.stl");
@@ -168,7 +169,7 @@ module cms_stem(bolt)
 	bolt_y = grip_cms_stub_diameter/4+1.3;
 	bolt_z = 18;
 
-	grip_cms_twist = 20;
+	//grip_cms_twist = 20;
 	if (bolt)
 	{
 		cylinder(h = grip_cms_stub_length, r = (grip_cms_stub_diameter/2));
@@ -210,7 +211,7 @@ module cms_stem_support(support_start_z)
 }
 //%cube([100,100,220],true);
 
-left_handed = 1;
+left_handed = 0;
 joystick_handle();
 
 //joystick_handle_parts(2);

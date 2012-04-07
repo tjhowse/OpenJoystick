@@ -9,7 +9,10 @@ module joystick_head()
 {
 	//shaft_offset = -3;
 	shaft_offset = -6;
-	
+/*	headbolt_x = 11;
+	headbolt_y = -10;
+	headbolt_z = -13;
+	headbolt_extra = 8;*/
 	
 	mode_button_z = 44.5;
 	
@@ -27,6 +30,9 @@ module joystick_head()
 		translate([0,0,10]) rotate([45,0,0]) translate([0,-7,0]) joystick_head_faceplate_negative_removal();
 		translate([0,0,-42.5]) cube([50,70,50],true);		
 		translate([0,shaft_offset,-38]) cylinder(r=(shaft_dia/2), h=26);
+
+		translate([headbolt_x,headbolt_y,headbolt_z+headbolt_extra]) rotate([180,0,0]) bolt(3,3+headbolt_extra,1.45,20,13);
+		translate([-headbolt_x,headbolt_y,headbolt_z+headbolt_extra]) rotate([180,0,0]) bolt(3,3+headbolt_extra,1.45,20,13);
 		
 		// Trigger cutaway
 		translate([-(joystick_head_trigger_thickness/2),28, 5]) rotate([0,-90,180]) joystick_head_trigger_cutaway();
@@ -51,7 +57,7 @@ module joystick_head()
 		translate([6,0,0]) rotate([-90,0,0]) cylinder(r=1.5,h=33);
 		
 		//translate([0,-50,-50]) cube([100,100,100]);
-		joystick_head_sidecuts();
+		translate([0,2,0]) joystick_head_sidecuts();
 	}
 	
 	//translate([0,shaft_offset,-43]) cylinder(r=(grip_diameter/2), h=26);	
@@ -271,11 +277,12 @@ module joystick_button2()
 
 module joystick_button2_sleve()
 {
+	sleve_z = 4;
 	difference()
 	{
-		cylinder(r=button2_diameter/2+2.2, h=3);
-		cylinder(r=button2_diameter/2+0.3, h=3);
-		translate([0,0,button2_lip*2]) cylinder(r=button2_diameter/2+button2_lip+0.3, h=3);
+		cylinder(r=button2_diameter/2+2.2, h=sleve_z);
+		cylinder(r=button2_diameter/2+0.3, h=sleve_z);
+		translate([0,0,button2_lip*2]) cylinder(r=button2_diameter/2+button2_lip+0.3, h=sleve_z);
 	}		
 }
 
@@ -303,8 +310,12 @@ module joystick_head_faceplate_negative_removal()
 	translate([-50,-50,-zff-4_way_hat_base_z+1]) cube([100,100,60]);
 	difference()
 	{
-		translate([0,0,-zff-4_way_hat_base_z+1-cutout_depth]) scale([1,1.1,1]) cylinder(r=20,h=cutout_depth);
-		translate([-13,4,-zff-4_way_hat_base_z+1-cutout_depth]) cube([6,6,cutout_depth-1]);		
+		translate([0,0,-zff-4_way_hat_base_z+1-cutout_depth]) scale([1.1,1.1,1]) cylinder(r=20,h=cutout_depth);
+		translate([-13,4,-zff-4_way_hat_base_z+1-cutout_depth]) cube([6,6,cutout_depth-1]);
+		
+		// Extra screw grab
+		translate([-3,14,-zff-4_way_hat_base_z+1-cutout_depth]) #cube([6,6,cutout_depth-1]);
+		translate([-3,-10,-zff-4_way_hat_base_z+1-cutout_depth]) #cube([6,6,cutout_depth-1]);
 	}
 }
 
@@ -316,6 +327,12 @@ module joystick_head_with_boltholes(headorface)
 	// 2 - both
 
 	trigger_guard_bolts_extra_distance = 6;
+	
+	headbolt_x = 10;
+	headbolt_y = 13;
+	headbolt_z = 8;
+	headbolt_extra = 5;
+	
 	difference()
 	{
 		union()
@@ -329,17 +346,21 @@ module joystick_head_with_boltholes(headorface)
 					{
 						rotate([270,0,0]) translate([6,0,-7.1]) bolt(3,3+trigger_guard_bolts_extra_distance,1.45,20,13);
 						rotate([270,0,0]) translate([-6,0,-7.1]) bolt(3,3+trigger_guard_bolts_extra_distance,1.45,20,13);
+						
+						//rotate([180,0,0]) translate([headbolt_x,headbolt_y,headbolt_z-headbolt_extra]) %bolt(3,3+headbolt_extra,1.45,20,13);
+						//rotate([180,0,0]) translate([-headbolt_x,headbolt_y,headbolt_z-headbolt_extra]) %bolt(3,3+headbolt_extra,1.45,20,13);
 					}
 				}
 			}
+			
 			if (headorface >= 1) 
 			{
 				joystick_faceplate();
 			}
 		}
 		//bolt(cap_r, cap_z, shaft_r, shaft_z)
-		rotate([225,0,0]) translate([0,-17,-7.1]) bolt(3,3,1.45,10,6.7);
-		rotate([225,0,0]) translate([0,7,-7.1]) bolt(3,3,1.45,13,6.7);	
+		rotate([225,0,0]) translate([0,-17,-7.1]) bolt(3,3,1.45,10,4.55);
+		rotate([225,0,0]) translate([0,7,-7.1]) bolt(3,3,1.45,13,4.55);	
 		
 	}
 }
@@ -359,7 +380,7 @@ module joystick_head_with_boltholes(headorface)
 //joystick_head();
 //lever_switch(1, 0);
 
-
+//joystick_head_with_boltholes(0);
 //joystick_head_faceplate_negative_removal();
 //joystick_head_trigger(1);
 //joystick_big_button();
@@ -367,7 +388,7 @@ module joystick_head_with_boltholes(headorface)
 
 //translate([10,0,-3]) 
 //joystick_button2();
-translate([0,0,2])joystick_button2_sleve();
+//translate([0,0,2])joystick_button2_sleve();
 
 //joystick_big_button_cutout(1);
 
@@ -382,14 +403,14 @@ translate([0,0,2])joystick_button2_sleve();
 
 // PRINTABLE EXPORT THINGS HERE *******************
 // Just the head
-/*render()translate([0,0,17.50])
+render()translate([0,0,17.50])
 {
 	difference()
 	{	
 		joystick_head_with_boltholes(0);
 		translate([-50,-10,-50]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-*/
+}
 /*render()
 {
 	translate([0,60,-33.8426])

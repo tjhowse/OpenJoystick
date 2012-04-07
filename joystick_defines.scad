@@ -82,7 +82,7 @@ grip_cms_offset = -5;
 grip_cms_angle = 30;
 grip_cms_stub_length = 40;
 grip_cms_stub_diameter = 4_way_hat_base_dia;
-grip_cms_twist = 20;
+grip_cms_twist = 15;
 
 grip_head_offset_x = -10;
 grip_head_box_x = 4_way_hat_base_dia * 2.5;
@@ -96,6 +96,11 @@ my_layer_thickness = 0.35;
 joystick_big_btn_height = 8;
 joystick_big_btn_diameter = 8.0;
 joystick_big_btn_clippyness = 3;
+
+headbolt_x = 10.8;
+headbolt_y = -9;
+headbolt_z = -11;
+headbolt_extra = 8;
 
 module hat_cutout(bloat)
 {
