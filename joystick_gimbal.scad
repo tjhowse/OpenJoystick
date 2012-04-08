@@ -12,6 +12,7 @@ inner_gimbal_total_y = inner_gimbal_y+2*bearing_retain_thickness;
 joiner_z = 10;
 joiner_x = 10;
 joiner_stem_scalar = 4;
+support_stem_beef = 1;
 
 temp = joiner_z/2;
 
@@ -146,7 +147,7 @@ module joystick_base()
 	base_y = inner_gimbal_total_y + mounting_extra_y;
 	base_z = 5;
 	
-	suport_stem_beef = 1;
+	
 	ttx = spar_width/2-2;
 
 	difference()
@@ -158,11 +159,11 @@ module joystick_base()
 			
 			translate([-(base_x+2*spar_width)/2,-spar_width/2,0]) cube([base_x+2*spar_width,spar_width,base_z]);
 			
-			translate([-base_x/2,-spar_width/2-suport_stem_beef/2,base_z]) 
+			translate([-base_x/2,-spar_width/2-support_stem_beef/2,base_z]) 
 				difference()
 				{
-					cube([spar_width,spar_width+suport_stem_beef, base_support_height+suport_stem_beef]);
-					translate([-zff,spar_width/2-joiner_peg_xy/2+suport_stem_beef/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
+					cube([spar_width,spar_width+support_stem_beef, base_support_height+support_stem_beef]);
+					translate([-zff,spar_width/2-joiner_peg_xy/2+support_stem_beef/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
 					union()
 					{
 						cube([joiner_peg_z,joiner_peg_xy, joiner_peg_xy]);
@@ -170,11 +171,11 @@ module joystick_base()
 					}
 				}
 			
-			translate([base_x/2-spar_width,-spar_width/2-suport_stem_beef/2,base_z])
+			translate([base_x/2-spar_width,-spar_width/2-support_stem_beef/2,base_z])
 				difference()
 				{
-					cube([spar_width,spar_width+suport_stem_beef, base_support_height+suport_stem_beef]);
-					translate([spar_width/2+zff,spar_width/2-joiner_peg_xy/2+suport_stem_beef/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
+					cube([spar_width,spar_width+support_stem_beef, base_support_height+support_stem_beef]);
+					translate([spar_width/2+zff,spar_width/2-joiner_peg_xy/2+support_stem_beef/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
 					union()
 					{
 						cube([joiner_peg_z,joiner_peg_xy, joiner_peg_xy]);
@@ -186,17 +187,17 @@ module joystick_base()
 		
 		// One day you'll be able to flag primatives for more infill.
 		// Until then, horrible hacks:
-		translate([spar_width/2+suport_stem_beef/2-base_x/2,0,-1]) cylinder(r=0.1,h = 100);
-		translate([spar_width/2+suport_stem_beef/2-base_x/2+ttx,ttx,-1]) cylinder(r=0.1,h = 100);
-		translate([spar_width/2+suport_stem_beef/2-base_x/2+ttx,-ttx,-1]) cylinder(r=0.1,h = 100);
-		translate([spar_width/2+suport_stem_beef/2-base_x/2-ttx,ttx,-1]) cylinder(r=0.1,h = 100);
-		translate([spar_width/2+suport_stem_beef/2-base_x/2-ttx,-ttx,-1]) cylinder(r=0.1,h = 100);	
+		translate([spar_width/2+support_stem_beef/2-base_x/2,0,-1]) cylinder(r=0.1,h = 100);
+		translate([spar_width/2+support_stem_beef/2-base_x/2+ttx,ttx,-1]) cylinder(r=0.1,h = 100);
+		translate([spar_width/2+support_stem_beef/2-base_x/2+ttx,-ttx,-1]) cylinder(r=0.1,h = 100);
+		translate([spar_width/2+support_stem_beef/2-base_x/2-ttx,ttx,-1]) cylinder(r=0.1,h = 100);
+		translate([spar_width/2+support_stem_beef/2-base_x/2-ttx,-ttx,-1]) cylinder(r=0.1,h = 100);	
 		
-		translate([-spar_width/2-suport_stem_beef/2+base_x/2,0,-1]) cylinder(r=0.1,h = 100);
-		translate([-spar_width/2-suport_stem_beef/2+base_x/2+ttx,ttx,-1]) cylinder(r=0.1,h = 100);
-		translate([-spar_width/2-suport_stem_beef/2+base_x/2+ttx,-ttx,-1]) cylinder(r=0.1,h = 100);
-		translate([-spar_width/2-suport_stem_beef/2+base_x/2-ttx,ttx,-1]) cylinder(r=0.1,h = 100);
-		translate([-spar_width/2-suport_stem_beef/2+base_x/2-ttx,-ttx,-1]) cylinder(r=0.1,h = 100);
+		translate([-spar_width/2-support_stem_beef/2+base_x/2,0,-1]) cylinder(r=0.1,h = 100);
+		translate([-spar_width/2-support_stem_beef/2+base_x/2+ttx,ttx,-1]) cylinder(r=0.1,h = 100);
+		translate([-spar_width/2-support_stem_beef/2+base_x/2+ttx,-ttx,-1]) cylinder(r=0.1,h = 100);
+		translate([-spar_width/2-support_stem_beef/2+base_x/2-ttx,ttx,-1]) cylinder(r=0.1,h = 100);
+		translate([-spar_width/2-support_stem_beef/2+base_x/2-ttx,-ttx,-1]) cylinder(r=0.1,h = 100);
 	}
 	
 }
@@ -255,6 +256,20 @@ module temp_stem_extender()
 	}
 }
 
+module gimbal_alignment_jig()
+{
+	jig_x = ((inner_gimbal_x-2*bearing_thickness)/2-(bearing_retain_thickness+inner_gimbal_clearance/2)-(joiner_x-support_stem_beef))*2;
+	jig_y = 20;
+	jig_z = 6;
+	//cylinder(r=(inner_gimbal_x-2*bearing_thickness)/2-(bearing_retain_thickness+inner_gimbal_clearance/2)-(joiner_x-support_stem_beef),h=30);
+	difference()
+	{
+		translate([0,0,jig_z/2]) cube([jig_x,jig_y,jig_z],true);
+		cylinder(r=shaft_dia/2+0.2,h=jig_z);
+		translate([0,0,jig_z/4]) cube([joiner_x+0.2,jig_y,jig_z/2],true);
+	}
+}
+
 //translate([0,inner_gimbal_y/2+4+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,90]) joystick_stem_plug(4,0);
 //rotate([0,0,180]) translate([0,inner_gimbal_y/2+springbar_z+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,-90]) joystick_stem_plug_springbar(inner_gimbal_clearance);
 //translate([30,0,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
@@ -274,6 +289,7 @@ translate([springbar_z+inner_gimbal_total_x/2,0,inner_gimbal_z/2+base_support_he
 }
 translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) joystick_inner_gimbal();
 joystick_base();*/
+rotate([180,0,0]) gimbal_alignment_jig();
 
 //translate([0,50,0]) joystick_base();
 //translate([0,0,inner_gimbal_z/2]) joystick_inner_gimbal();

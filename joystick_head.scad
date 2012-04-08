@@ -15,7 +15,7 @@ module joystick_head()
 	headbolt_extra = 8;*/
 	
 	mode_button_z = 44.5;
-	
+
 	difference()
 	{
 		
@@ -261,8 +261,8 @@ module joystick_big_button_cutout(legdir)
 	translate([0,0,-joystick_big_btn_height+pb_btn_z])
 	union()
 	{
-		%translate([0,0,pb_z]) cylinder(r=4.8,h=joystick_big_btn_height+2,$fn=circle_faces);
-		%translate([0,0,pb_z]) cylinder(r=5.2,h=1+pb_btn_z,$fn=circle_faces);
+		translate([0,0,pb_z]) cylinder(r=4.8,h=joystick_big_btn_height+2,$fn=circle_faces);
+		translate([0,0,pb_z]) cylinder(r=5.2,h=1+pb_btn_z,$fn=circle_faces);
 		pb(1.01,legdir);
 	}
 }
@@ -403,15 +403,15 @@ module joystick_head_with_boltholes(headorface)
 
 // PRINTABLE EXPORT THINGS HERE *******************
 // Just the head
-render()translate([0,0,17.50])
-{
+//render()translate([0,0,17.50])
+/*{
 	difference()
 	{	
 		joystick_head_with_boltholes(0);
 		translate([-50,-10,-50]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-}
-/*render()
+}*/
+render()
 {
 	translate([0,60,-33.8426])
 	rotate([120,0,0])
@@ -422,7 +422,7 @@ render()translate([0,0,17.50])
 		//translate([-50,-80,-50]) cube([100,100,100]);	
 		translate([-50,-96.6,0]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-}*/
+}
 
 //translate([50,0,-0.571]) render() rotate([-45,0,0]) joystick_head_with_boltholes(1);
 
