@@ -147,6 +147,7 @@ module joystick_base()
 	base_y = inner_gimbal_total_y + mounting_extra_y;
 	base_z = 5;
 	
+	fillet_radius = 5;
 	
 	ttx = spar_width/2-2;
 
@@ -162,7 +163,13 @@ module joystick_base()
 			translate([-base_x/2,-spar_width/2-support_stem_beef/2,base_z]) 
 				difference()
 				{
-					cube([spar_width,spar_width+support_stem_beef, base_support_height+support_stem_beef]);
+					union()
+					{
+						cube([spar_width,spar_width+support_stem_beef, base_support_height+support_stem_beef]);
+						rotate([0,0,-90]) fillet(fillet_radius,spar_width);
+						translate([spar_width,spar_width+support_stem_beef,0]) rotate([0,0,90]) fillet(fillet_radius,spar_width);
+						translate([0,spar_width+support_stem_beef/2,0]) rotate([0,0,180]) fillet(fillet_radius,spar_width);
+					}
 					translate([-zff,spar_width/2-joiner_peg_xy/2+support_stem_beef/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
 					union()
 					{
@@ -174,7 +181,13 @@ module joystick_base()
 			translate([base_x/2-spar_width,-spar_width/2-support_stem_beef/2,base_z])
 				difference()
 				{
-					cube([spar_width,spar_width+support_stem_beef, base_support_height+support_stem_beef]);
+					union()
+					{
+						cube([spar_width,spar_width+support_stem_beef, base_support_height+support_stem_beef]);
+						rotate([0,0,-90]) fillet(fillet_radius,spar_width);
+						translate([spar_width,spar_width+support_stem_beef,0]) rotate([0,0,90]) fillet(fillet_radius,spar_width);
+						translate([spar_width,support_stem_beef/2,0]) rotate([0,0,0]) fillet(fillet_radius,spar_width);
+					}
 					translate([spar_width/2+zff,spar_width/2-joiner_peg_xy/2+support_stem_beef/2,base_support_height-joiner_peg_xy-(spar_width-joiner_peg_xy)/2]) 
 					union()
 					{
@@ -184,6 +197,15 @@ module joystick_base()
 					
 				}
 		}
+		
+		// Mounting bolts
+		translate([base_x/2-spar_width/2,-base_y/2+5,10]) rotate([180,0,0]) bolt(3,3,1.45,20,0);
+		translate([base_x/2-spar_width/2,base_y/2-5,10]) rotate([180,0,0]) bolt(3,3,1.45,20,0);
+		translate([-base_x/2+spar_width/2,-base_y/2+5,10]) rotate([180,0,0]) bolt(3,3,1.45,20,0);
+		translate([-base_x/2+spar_width/2,base_y/2-5,10]) rotate([180,0,0]) bolt(3,3,1.45,20,0);
+		translate([(base_x+2*spar_width)/2-3,0,10]) rotate([180,0,0]) bolt(3,3,1.45,20,0);
+		translate([-(base_x+2*spar_width)/2+3,0,10]) rotate([180,0,0]) bolt(3,3,1.45,20,0);
+		
 		
 		// One day you'll be able to flag primatives for more infill.
 		// Until then, horrible hacks:
@@ -289,7 +311,9 @@ translate([springbar_z+inner_gimbal_total_x/2,0,inner_gimbal_z/2+base_support_he
 }
 translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) joystick_inner_gimbal();
 joystick_base();*/
-rotate([180,0,0]) gimbal_alignment_jig();
+//rotate([180,0,0]) gimbal_alignment_jig();
 
-//translate([0,50,0]) joystick_base();
+translate([0,50,0]) joystick_base();
+
+
 //translate([0,0,inner_gimbal_z/2]) joystick_inner_gimbal();

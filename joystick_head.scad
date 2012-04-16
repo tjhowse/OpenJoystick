@@ -285,7 +285,16 @@ module joystick_button2_sleve()
 		translate([0,0,button2_lip*2]) cylinder(r=button2_diameter/2+button2_lip+0.3, h=sleve_z);
 	}		
 }
-
+module joystick_button2_sleve_back()
+{
+	sleve_z = 6;
+	difference()
+	{
+		cylinder(r=button2_diameter/2+2.2, h=sleve_z);
+		cylinder(r=button2_diameter/2+0.3, h=sleve_z);
+		translate([0,0,button2_lip*2]) cylinder(r=button2_diameter/2+button2_lip+0.3, h=sleve_z);
+	}		
+}
 module joystick_head_faceplate_cutout()
 {
 	offset_x = -10.2;
@@ -388,7 +397,7 @@ module joystick_head_with_boltholes(headorface)
 
 //translate([10,0,-3]) 
 //joystick_button2();
-//translate([0,0,2])joystick_button2_sleve();
+translate([0,0,2])joystick_button2_sleve_back();
 
 //joystick_big_button_cutout(1);
 
@@ -411,7 +420,7 @@ module joystick_head_with_boltholes(headorface)
 		translate([-50,-10,-50]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
 }*/
-render()
+/*render()
 {
 	translate([0,60,-33.8426])
 	rotate([120,0,0])
@@ -422,7 +431,7 @@ render()
 		//translate([-50,-80,-50]) cube([100,100,100]);	
 		translate([-50,-96.6,0]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-}
+}*/
 
 //translate([50,0,-0.571]) render() rotate([-45,0,0]) joystick_head_with_boltholes(1);
 

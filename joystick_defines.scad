@@ -156,11 +156,14 @@ module bolt(cap_r, cap_z, shaft_r, shaft_z,slot_len)
 	translate([0,0,cap_z+slot_len]) cylinder(r=shaft_r, h=shaft_z-slot_len);
 }
 
-
-
-
-
-
+module fillet(radius, length)
+{
+	difference()
+	{
+		cube([radius,length,radius]);
+		translate([radius,length+zff,radius]) rotate([90,0,0]) cylinder(r=radius,h=length+2*zff);
+	}
+}
 
 
 
