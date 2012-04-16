@@ -1,3 +1,21 @@
+/*
+	OpenJoystick - A project creating affordable, open source, 3D-printable custom flight-sim joysticks for everyone
+	Copyright (C) 2012 Travis John Howse
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 include <joystick_defines.scad>
 use <joystick_handle.scad>
 bearing_retain_thickness = 1;
@@ -278,6 +296,28 @@ module temp_stem_extender()
 	}
 }
 
+module joystick_magnet_holder(magnet_d, magnet_z)
+{
+	// This widget holds the magnet at the bottom of the stem.
+	
+	holder_z = magnet_z+3;
+	peg_z = holder_z+3;
+	
+	peg_width = 4.5;
+
+	difference()
+	{
+		union()
+		{
+			cylinder(h = holder_z, r = (shaft_dia/2));
+			translate([(shaft_dia/2)-2-peg_width/2,-peg_width/2,0]) cube([peg_width-0.5,peg_width,peg_z]);
+			translate([(-shaft_dia/2)+2-peg_width/2+0.5,-peg_width/2,0]) cube([peg_width-0.5,peg_width,peg_z]);
+		}
+		cylinder(r=magnet_d/2,magnet_z);
+	}
+	//%cube([7.3,7.3,100],true);
+}
+
 module gimbal_alignment_jig()
 {
 	jig_x = ((inner_gimbal_x-2*bearing_thickness)/2-(bearing_retain_thickness+inner_gimbal_clearance/2)-(joiner_x-support_stem_beef))*2;
@@ -311,9 +351,11 @@ translate([springbar_z+inner_gimbal_total_x/2,0,inner_gimbal_z/2+base_support_he
 }
 translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) joystick_inner_gimbal();
 joystick_base();*/
-//rotate([180,0,0]) gimbal_alignment_jig();
+//translate([0,0,inner_gimbal_z/2+base_support_height-10]) gimbal_alignment_jig();
 
-translate([0,50,0]) joystick_base();
+joystick_magnet_holder(10,5);
+
+//translate([0,50,0]) joystick_base();
 
 
 //translate([0,0,inner_gimbal_z/2]) joystick_inner_gimbal();

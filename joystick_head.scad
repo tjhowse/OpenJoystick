@@ -1,3 +1,21 @@
+/*
+	OpenJoystick - A project creating affordable, open source, 3D-printable custom flight-sim joysticks for everyone
+	Copyright (C) 2012 Travis John Howse
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 include <joystick_defines.scad>
 use <joystick_4_way_hat_mk1.scad>
 
@@ -275,9 +293,9 @@ module joystick_button2()
 	translate([0,0,3+button2_lip]) cylinder(r2=button2_diameter/2, r1=button2_diameter/2+button2_lip,h=button2_lip);
 }	
 
-module joystick_button2_sleve()
+module joystick_button2_sleve(sleve_z)
 {
-	sleve_z = 4;
+	// 6 for mode button, 4 for weapons release.
 	difference()
 	{
 		cylinder(r=button2_diameter/2+2.2, h=sleve_z);
@@ -285,16 +303,7 @@ module joystick_button2_sleve()
 		translate([0,0,button2_lip*2]) cylinder(r=button2_diameter/2+button2_lip+0.3, h=sleve_z);
 	}		
 }
-module joystick_button2_sleve_back()
-{
-	sleve_z = 6;
-	difference()
-	{
-		cylinder(r=button2_diameter/2+2.2, h=sleve_z);
-		cylinder(r=button2_diameter/2+0.3, h=sleve_z);
-		translate([0,0,button2_lip*2]) cylinder(r=button2_diameter/2+button2_lip+0.3, h=sleve_z);
-	}		
-}
+
 module joystick_head_faceplate_cutout()
 {
 	offset_x = -10.2;
@@ -397,7 +406,9 @@ module joystick_head_with_boltholes(headorface)
 
 //translate([10,0,-3]) 
 //joystick_button2();
-translate([0,0,2])joystick_button2_sleve_back();
+
+// 
+translate([0,0,2]) joystick_button2_sleve(6);
 
 //joystick_big_button_cutout(1);
 
