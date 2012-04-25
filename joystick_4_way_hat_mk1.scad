@@ -83,8 +83,6 @@ module hat_voids(numDirs)
 	}
 }
 
-// Next up: build the hat that goes on top out of a series of stacking cylinders, tower of hanoi style with a 4_way_hat_base_screw_dia hole in the bottom
-
 module switch_hat_saddle()
 {
 	step_size = 2; // Won't really work for anything other than 2, sorry.

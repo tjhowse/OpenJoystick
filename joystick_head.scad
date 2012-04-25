@@ -318,7 +318,6 @@ module joystick_head_faceplate_cutout()
 	
 	translate([-50,-50,-40-4_way_hat_base_z+1]) cube([100,100,40]);
 	translate([-50,-50,0]) cube([100,100,30]);
-	translate([-50,-50,0]) cube([100,100,30]);
 }
 
 module joystick_head_faceplate_negative_removal()
@@ -332,8 +331,8 @@ module joystick_head_faceplate_negative_removal()
 		translate([-13,4,-zff-4_way_hat_base_z+1-cutout_depth]) cube([6,6,cutout_depth-1]);
 		
 		// Extra screw grab
-		translate([-3,14,-zff-4_way_hat_base_z+1-cutout_depth]) #cube([6,6,cutout_depth-1]);
-		translate([-3,-10,-zff-4_way_hat_base_z+1-cutout_depth]) #cube([6,6,cutout_depth-1]);
+		translate([-3,14,-zff-4_way_hat_base_z+1-cutout_depth]) cube([6,6,cutout_depth-1]);
+		translate([-3,-10,-zff-4_way_hat_base_z+1-cutout_depth]) cube([6,6,cutout_depth-1]);
 	}
 }
 
@@ -408,7 +407,7 @@ module joystick_head_with_boltholes(headorface)
 //joystick_button2();
 
 // 
-translate([0,0,2]) joystick_button2_sleve(6);
+//translate([0,0,2]) joystick_button2_sleve(6);
 
 //joystick_big_button_cutout(1);
 
@@ -421,17 +420,19 @@ translate([0,0,2]) joystick_button2_sleve(6);
 //translate([0,0,-4]) joystick_big_button_cutout(1);
 //translate([0,-pb_xy/2-pb_leg_z/2,-joystick_big_btn_height-pb_z+pb_z-0.5]) cube([pb_xy,pb_leg_z*1.5,pb_z],true);
 
+joystick_head_faceplate_cutout();
+
 // PRINTABLE EXPORT THINGS HERE *******************
 // Just the head
-//render()translate([0,0,17.50])
-/*{
+/*render()translate([0,0,17.50])
+{
 	difference()
 	{	
 		joystick_head_with_boltholes(0);
 		translate([-50,-10,-50]) rotate([-30,0,0]) cube([100,100,100]);	
 	}
-}*/
-/*render()
+}
+render()
 {
 	translate([0,60,-33.8426])
 	rotate([120,0,0])
