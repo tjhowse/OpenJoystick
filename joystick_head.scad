@@ -316,6 +316,7 @@ module joystick_head_faceplate_cutout()
 		translate([-30,0,4]) rotate([0,0,90]) joystick_big_button_cutout(1);
 	}
 	
+	//translate([-50,-50,-40-4_way_hat_base_z+1]) cube([100,100,40]);
 	translate([-50,-50,-40-4_way_hat_base_z+1]) cube([100,100,40]);
 	translate([-50,-50,0]) cube([100,100,30]);
 }
