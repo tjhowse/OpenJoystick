@@ -21,9 +21,11 @@ use <joystick_4_way_hat_mk1.scad>
 
 throttle_right_x = 50;
 throttle_right_y = 50;
-throttle_right_z = 70;
+throttle_right_z = 55;
+//throttle_right_z = 70;
 
 wall_thickness = 3;
+//wall_thickness = 1;
 plate_thickness = 4_way_hat_base_z-1;
 
 screw_support_x = 10;
@@ -32,6 +34,18 @@ throttle_stem_x = 25;
 throttle_stem_y = 60;
 throttle_stem_z = 15;
 throttle_stem_thickness = 3;
+
+plate_clearance = 0.3;
+plate_z_clearance = 0.3;
+//plate_clearance = 2;
+
+3ts_x = 12.7;
+3ts_y = 11.5;
+3ts_z = 12.9;
+3ts_thread_dia = 6;
+3ts_thread_z = 9;
+3ts_stem_dia = 2.9;
+3ts_stem_z = 10.3;
 
 module throttle_right()
 {
@@ -52,21 +66,21 @@ module throttle_right()
 	}
 	
 	// Vertical screwholes
-	translate([wall_thickness,wall_thickness+5,throttle_right_z-plate_thickness]) screw_support(0);
-	translate([wall_thickness,2*wall_thickness+throttle_right_y,throttle_right_z-plate_thickness]) screw_support(0);
-	translate([throttle_right_x-(screw_support_x/2)-plate_thickness,wall_thickness,throttle_right_z-plate_thickness]) rotate([0,0,90]) screw_support(0);
-	translate([throttle_right_x-wall_thickness,2*wall_thickness+throttle_right_y,throttle_right_z-plate_thickness]) rotate([0,0,180]) screw_support(0);
+	translate([wall_thickness,wall_thickness+5,throttle_right_z-plate_thickness-plate_z_clearance]) screw_support(0);
+	translate([wall_thickness,2*wall_thickness+throttle_right_y,throttle_right_z-plate_thickness-plate_z_clearance]) screw_support(0);
+	translate([throttle_right_x-(screw_support_x/2)-plate_thickness-plate_z_clearance,wall_thickness,throttle_right_z-plate_thickness-plate_z_clearance]) rotate([0,0,90]) screw_support(0);
+	translate([throttle_right_x-wall_thickness,2*wall_thickness+throttle_right_y,throttle_right_z-plate_thickness-plate_z_clearance]) rotate([0,0,180]) screw_support(0);
 	
 	// Horizontal screwholes
-	translate([throttle_right_x-plate_thickness,wall_thickness*3,wall_thickness]) screw_support(1);
-	translate([throttle_right_x-plate_thickness,throttle_right_y-wall_thickness*2,wall_thickness]) screw_support(1);
+	translate([throttle_right_x-plate_thickness-plate_z_clearance,wall_thickness+screw_support_x/2,wall_thickness]) screw_support(1);
+	translate([throttle_right_x-plate_thickness-plate_z_clearance,throttle_right_y-wall_thickness*2,wall_thickness]) screw_support(1);
 	
 	// Lip
-	translate([throttle_right_x-wall_thickness-plate_thickness,wall_thickness,wall_thickness]) cube([wall_thickness,throttle_right_y,wall_thickness]);
-	translate([throttle_right_x-wall_thickness-plate_thickness,wall_thickness,wall_thickness]) cube([wall_thickness,wall_thickness,throttle_right_z-plate_thickness-wall_thickness]);
-	translate([throttle_right_x-wall_thickness-plate_thickness,throttle_right_y-wall_thickness,wall_thickness]) cube([wall_thickness,wall_thickness*2,throttle_right_z-plate_thickness-wall_thickness]);
-	translate([throttle_right_x-wall_thickness-plate_thickness,throttle_right_y,wall_thickness]) 
-		cube([plate_thickness,wall_thickness,throttle_right_z-plate_thickness-wall_thickness]);
+	translate([throttle_right_x-wall_thickness-plate_thickness-plate_z_clearance,wall_thickness,wall_thickness]) cube([wall_thickness,throttle_right_y,wall_thickness]);
+	translate([throttle_right_x-wall_thickness-plate_thickness-plate_z_clearance,wall_thickness,wall_thickness]) cube([wall_thickness,wall_thickness,throttle_right_z-plate_thickness-wall_thickness-plate_z_clearance]);
+	translate([throttle_right_x-wall_thickness-plate_thickness-plate_z_clearance,throttle_right_y-wall_thickness,wall_thickness]) cube([wall_thickness,wall_thickness*2,throttle_right_z-plate_thickness-wall_thickness-plate_z_clearance]);
+	translate([throttle_right_x-wall_thickness-plate_thickness-plate_z_clearance,throttle_right_y,wall_thickness]) 
+		cube([plate_thickness+plate_z_clearance,wall_thickness,throttle_right_z-plate_thickness-wall_thickness-plate_z_clearance]);
 	
 	translate([throttle_right_x/2-throttle_stem_x/2,0.5,0]) throttle_stem();
 }
@@ -103,39 +117,46 @@ module throttle_endplate()
 	{
 		union()
 		{
-			translate([0,0,zff]) cube([throttle_right_x-wall_thickness,throttle_right_y-wall_thickness,plate_thickness-2*zff]);
-			translate([0,0,zff]) translate([(throttle_right_x-2*wall_thickness)/2,throttle_right_y-wall_thickness,0]) cylinder(r=(throttle_right_x-2*wall_thickness)/2,h=plate_thickness-2*zff);
+			translate([0,0,zff])
+				cube([throttle_right_x-wall_thickness-plate_clearance,throttle_right_y-wall_thickness-plate_clearance,plate_thickness-2*zff]);
+			translate([0,0,zff]) translate([(throttle_right_x-2*wall_thickness)/2-plate_clearance/2,throttle_right_y-wall_thickness-plate_clearance/2,0])
+				//cylinder(r=(throttle_right_x-2*wall_thickness)/2,h=plate_thickness-2*zff);
+				cylinder(r=(throttle_right_x-2*wall_thickness-plate_clearance)/2,h=plate_thickness-2*zff);
 		}
 		
-		translate([screw_support_x/2,screw_support_x/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
-		translate([throttle_right_x-(screw_support_x/2)-plate_thickness-wall_thickness,screw_support_x/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
-		translate([screw_support_x/2,2*wall_thickness+throttle_right_y-wall_thickness,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
-		translate([throttle_right_x-2*wall_thickness-screw_support_x/2,2*wall_thickness+throttle_right_y-wall_thickness,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
+		translate([screw_support_x/2-plate_clearance/2,screw_support_x/2-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
+		translate([throttle_right_x-(screw_support_x/2)-plate_thickness-wall_thickness-plate_clearance/2-plate_z_clearance,screw_support_x/2-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
+		translate([screw_support_x/2-plate_clearance/2,2*wall_thickness+throttle_right_y-wall_thickness-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
+		translate([throttle_right_x-2*wall_thickness-screw_support_x/2-plate_clearance/2,2*wall_thickness+throttle_right_y-wall_thickness-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
 		
 		translate([throttle_right_x/2-wall_thickness,throttle_right_y,-1]) hat_voids(4);
 		translate([throttle_right_x/2-wall_thickness,throttle_right_y/6,-1]) rotate([0,0,90]) hat_voids(2);
 		translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+switch_spacing,-1]) rotate([0,0,90]) hat_voids(2);
 		translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+2*switch_spacing,-1]) rotate([0,0,90]) hat_voids(2);
 		
-		translate([throttle_right_x-wall_thickness-plate_thickness/2,(throttle_right_y-wall_thickness)/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
+		translate([throttle_right_x-wall_thickness-plate_thickness/2-plate_clearance/2,(throttle_right_y-wall_thickness)/2-3,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
 		
 	}
 }
 
 module throttle_backplate()
 {
-	switch_spacing = 23;
+	switch_spacing = 21;
 	top_dist = 2*throttle_right_y/3;
+	
+	//wall_thickness+screw_support_x/2
+	
 	difference()
 	{
-		translate([0,0,-zff]) cube([throttle_right_z-wall_thickness-plate_thickness,throttle_right_y-wall_thickness,plate_thickness]);
+		translate([0,0,-zff]) cube([throttle_right_z-wall_thickness-plate_thickness-plate_clearance,throttle_right_y-wall_thickness-plate_clearance,plate_thickness]);
 	
-		translate([throttle_right_z-wall_thickness-plate_thickness-screw_support_x/2,wall_thickness*2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
-		translate([throttle_right_z-wall_thickness-plate_thickness-screw_support_x/2,throttle_right_y-3*wall_thickness,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
+		translate([throttle_right_z-wall_thickness-plate_thickness-screw_support_x/2-plate_clearance/2,screw_support_x/2-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
+		translate([throttle_right_z-wall_thickness-plate_thickness-screw_support_x/2-plate_clearance/2,throttle_right_y-3*wall_thickness-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
 	
 		translate([(throttle_right_z-wall_thickness-plate_thickness)/2-switch_spacing/2,top_dist,-1]) hat_voids(4);
 		translate([(throttle_right_z-wall_thickness-plate_thickness)/2+switch_spacing/2,top_dist,-1]) hat_voids(4);
-		translate([-6,(throttle_right_y-wall_thickness)/2,plate_thickness/2]) rotate([0,90,0]) bolt(3,3,1.45,20,0);
+		
+		translate([-6,(throttle_right_y-wall_thickness)/2-3,plate_thickness/2]) rotate([0,90,0]) bolt(3,3,1.45,20,0);
 	}
 }
 
@@ -179,13 +200,7 @@ module 3_throw_switch(position)
 	// http://www.jaycar.com.au/productView.asp?ID=ST0336&form=CAT2&SUBCATID=978#1
 	// Hopefully it's only a single dimension that needs to change.
 	
-	3ts_x = 12.7;
-	3ts_y = 11.5;
-	3ts_z = 12.9;
-	3ts_thread_dia = 6;
-	3ts_thread_z = 9;
-	3ts_stem_dia = 2.9;
-	3ts_stem_z = 10.3;
+
 	angle = position;	
 	
 	translate([-3ts_x/2,-3ts_y/2,-3ts_z]) cube([3ts_x,3ts_y,3ts_z]);
@@ -193,6 +208,27 @@ module 3_throw_switch(position)
 	translate([0,0,3ts_thread_z]) rotate([0,angle,0]) cylinder(r=3ts_stem_dia/2,h=3ts_stem_z);	
 }
 
+module switch_hat()
+{
+	shorter = 2;
+	difference()
+	{
+		union()
+		{
+			cylinder(r=(3ts_stem_dia/2)+1,h=3ts_stem_z-shorter+2);
+			//translate([0,0,3ts_stem_z+3]) rotate([0,45,0]) cube([5,(3ts_stem_dia)+1,5],true);
+			translate([0,0,3ts_stem_z-shorter+3-zff]) rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2)/2]) #cylinder(r=1.5+2,h=(3ts_stem_dia)+2+2*zff);
+		}
+		cylinder(r=(3ts_stem_dia/2),h=3ts_stem_z-shorter);
+		translate([0,0,3ts_stem_z-shorter+3-zff]) rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2)/2]) #cylinder(r=1.5,h=(3ts_stem_dia)+2+2*zff);
+	}
+	/*translate([0,0,3ts_stem_z+3]) difference()
+	{
+		
+		// Hole for filament hinge.
+		rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2)/2]) #cylinder(r=1.5,h=(3ts_stem_dia)+2);
+	}*/
+}
 
 
 explodedist = 0;
@@ -209,14 +245,16 @@ explodedist = 0;
 
 //throttle_stem();
 
-throttle_right();
+//throttle_right();
+
+switch_hat();
 
 if (0)
 {
 	union()
 	{
 		throttle_right();
-		translate([wall_thickness,wall_thickness,throttle_right_z-plate_thickness+explodedist]) throttle_endplate();
-		translate([throttle_right_x-plate_thickness+explodedist,wall_thickness,throttle_right_z-plate_thickness]) rotate([0,90,0]) throttle_backplate();
+		translate([wall_thickness+plate_clearance/2,wall_thickness+plate_clearance/2,throttle_right_z-plate_thickness+explodedist]) throttle_endplate();
+		translate([throttle_right_x-plate_thickness+explodedist,wall_thickness+plate_clearance/2,throttle_right_z-plate_thickness-plate_clearance/2]) rotate([0,90,0]) throttle_backplate();
 	}
 }
