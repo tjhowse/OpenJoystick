@@ -37,15 +37,23 @@ throttle_stem_thickness = 3;
 
 plate_clearance = 0.3;
 plate_z_clearance = 0.3;
-//plate_clearance = 2;
+plate_clearance = 0.5;
 
 3ts_x = 12.7;
 3ts_y = 11.5;
 3ts_z = 12.9;
 3ts_thread_dia = 6;
 3ts_thread_z = 9;
+3ts_nut_dia = 9.1;
 3ts_stem_dia = 2.9;
 3ts_stem_z = 10.3;
+
+	// Based on measurements from a boat switch on the TM warthog
+boat_switch_x = 20;
+boat_switch_y = 10;
+boat_switch_z = 10;
+step_x = 2.5;
+step_z = 0.8;
 
 module throttle_right()
 {
@@ -119,9 +127,11 @@ module throttle_endplate()
 		{
 			translate([0,0,zff])
 				cube([throttle_right_x-wall_thickness-plate_clearance,throttle_right_y-wall_thickness-plate_clearance,plate_thickness-2*zff]);
-			translate([0,0,zff]) translate([(throttle_right_x-2*wall_thickness)/2-plate_clearance/2,throttle_right_y-wall_thickness-plate_clearance/2,0])
+			translate([0,0,zff]) translate([(throttle_right_x-2*wall_thickness)/2-plate_clearance/2,throttle_right_y-wall_thickness-plate_clearance,0])
 				//cylinder(r=(throttle_right_x-2*wall_thickness)/2,h=plate_thickness-2*zff);
 				cylinder(r=(throttle_right_x-2*wall_thickness-plate_clearance)/2,h=plate_thickness-2*zff);
+			translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+switch_spacing,plate_thickness]) 3_throw_switch_adds();
+			translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+2*switch_spacing,plate_thickness]) 3_throw_switch_adds();
 		}
 		
 		translate([screw_support_x/2-plate_clearance/2,screw_support_x/2-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
@@ -129,10 +139,12 @@ module throttle_endplate()
 		translate([screw_support_x/2-plate_clearance/2,2*wall_thickness+throttle_right_y-wall_thickness-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
 		translate([throttle_right_x-2*wall_thickness-screw_support_x/2-plate_clearance/2,2*wall_thickness+throttle_right_y-wall_thickness-plate_clearance/2,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
 		
-		translate([throttle_right_x/2-wall_thickness,throttle_right_y,-1]) hat_voids(4);
+		translate([throttle_right_x/2-wall_thickness,throttle_right_y+switch_spacing/2,-1]) hat_voids(4);
 		translate([throttle_right_x/2-wall_thickness,throttle_right_y/6,-1]) rotate([0,0,90]) hat_voids(2);
-		translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+switch_spacing,-1]) rotate([0,0,90]) hat_voids(2);
-		translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+2*switch_spacing,-1]) rotate([0,0,90]) hat_voids(2);
+		//translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+switch_spacing,-1]) rotate([0,0,90]) hat_voids(2);
+		translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+switch_spacing,-1]) 3_throw_switch_voids();
+		//translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+2*switch_spacing,-1]) rotate([0,0,90]) hat_voids(2);
+		translate([throttle_right_x/2-wall_thickness,throttle_right_y/6+2*switch_spacing,-1]) 3_throw_switch_voids();
 		
 		translate([throttle_right_x-wall_thickness-plate_thickness/2-plate_clearance/2,(throttle_right_y-wall_thickness)/2-3,plate_thickness+zff]) rotate([0,180,0]) bolt(3,3,1.45,20,20);
 		
@@ -204,8 +216,20 @@ module 3_throw_switch(position)
 	angle = position;	
 	
 	translate([-3ts_x/2,-3ts_y/2,-3ts_z]) cube([3ts_x,3ts_y,3ts_z]);
-	cylinder(r=3ts_thread_dia/2,h=3ts_thread_z);
+	translate([0,0,-zff]) cylinder(r=3ts_thread_dia/2,h=3ts_thread_z);
 	translate([0,0,3ts_thread_z]) rotate([0,angle,0]) cylinder(r=3ts_stem_dia/2,h=3ts_stem_z);	
+}
+
+module 3_throw_switch_voids()
+{
+	translate([0,0,1]) 3_throw_switch(0);
+	//translate([0,0,20.8-7]) boat_switch();
+}
+
+module 3_throw_switch_adds()
+{
+	translate([-boat_switch_x/2,boat_switch_y/2,0]) cube([boat_switch_x,2,9]);
+	translate([-boat_switch_x/2,-boat_switch_y/2-2,0]) cube([boat_switch_x,2,9]);
 }
 
 /*
@@ -254,12 +278,7 @@ module boat_switch()
 
 module boat_switch()
 {
-	// Based on measurements from a boat switch on the TM warthog
-	boat_switch_x = 20;
-	boat_switch_y = 10;
-	boat_switch_z = 10;
-	step_x = 2.5;
-	step_z = 0.8;
+
 	
 	hinge_clearance = 0.5;
 	
@@ -292,8 +311,9 @@ module china_switch()
 			scale([1,1,0.5]) translate([-plateau/2,0,china_switch_z*2]) rotate([90,0,0]) translate([0,0,-china_switch_y-zff]) cylinder(r=10,h=china_switch_y+2*zff);
 			scale([1,1,0.5]) translate([china_switch_x+plateau/2,0,china_switch_z*2]) rotate([90,0,0]) translate([0,0,-china_switch_y-zff]) cylinder(r=10,h=china_switch_y+2*zff);
 			
-		}		
-		cylinder(r=1.5,h=7);
+		}
+		// This one doesn't go onto a switch, rather it's a 2-way hat.
+		cylinder(r=4.5/2,h=7);
 	}
 }
 
@@ -314,14 +334,17 @@ explodedist = 0;
 //throttle_right();
 
 //switch_hinge();
-china_switch();
+//china_switch();
 
-if (0)
+//3_throw_switch_voids();
+//hat_voids(2);
+
+if (1)
 {
 	union()
 	{
 		throttle_right();
-		translate([wall_thickness+plate_clearance/2,wall_thickness+plate_clearance/2,throttle_right_z-plate_thickness+explodedist]) throttle_endplate();
+		translate([wall_thickness+plate_clearance/2,wall_thickness+plate_clearance/2,throttle_right_z-plate_thickness+explodedist]) #throttle_endplate();
 		translate([throttle_right_x-plate_thickness+explodedist,wall_thickness+plate_clearance/2,throttle_right_z-plate_thickness-plate_clearance/2]) rotate([0,90,0]) throttle_backplate();
 	}
 }
