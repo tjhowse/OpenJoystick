@@ -208,28 +208,94 @@ module 3_throw_switch(position)
 	translate([0,0,3ts_thread_z]) rotate([0,angle,0]) cylinder(r=3ts_stem_dia/2,h=3ts_stem_z);	
 }
 
-module switch_hat()
+/*
+These are redundant now that I realise that the switch tilts on the real thing.
+module switch_hinge()
 {
-	shorter = 2;
+	shorter = 3;
+	
 	difference()
 	{
 		union()
 		{
-			cylinder(r=(3ts_stem_dia/2)+1,h=3ts_stem_z-shorter+2);
+			cylinder(r=(3ts_stem_dia/2)+1,h=3ts_stem_z-shorter);
 			//translate([0,0,3ts_stem_z+3]) rotate([0,45,0]) cube([5,(3ts_stem_dia)+1,5],true);
-			translate([0,0,3ts_stem_z-shorter+3-zff]) rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2)/2]) #cylinder(r=1.5+2,h=(3ts_stem_dia)+2+2*zff);
+			translate([0,0,3ts_stem_z-shorter+1-zff]) rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2)/2]) cylinder(r=1.5+2,h=(3ts_stem_dia)+2+2*zff);
 		}
 		cylinder(r=(3ts_stem_dia/2),h=3ts_stem_z-shorter);
-		translate([0,0,3ts_stem_z-shorter+3-zff]) rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2)/2]) #cylinder(r=1.5,h=(3ts_stem_dia)+2+2*zff);
+		translate([0,0,3ts_stem_z-shorter+1-zff]) rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2)/2]) cylinder(r=1.5,h=(3ts_stem_dia)+2+2*zff);
 	}
-	/*translate([0,0,3ts_stem_z+3]) difference()
-	{
-		
-		// Hole for filament hinge.
-		rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2)/2]) #cylinder(r=1.5,h=(3ts_stem_dia)+2);
-	}*/
 }
 
+module boat_switch()
+{
+	// Based on measurements from a boat switch on the TM warthog
+	boat_switch_x = 20;
+	boat_switch_y = 10;
+	boat_switch_z = 11;
+	step_x = 2.5;
+	step_z = 0.8;
+	
+	hinge_clearance = 0.5;
+	
+	difference()
+	{
+		translate([-boat_switch_x/2,-boat_switch_y/2,0]) difference()
+		{
+			cube([boat_switch_x,boat_switch_y,boat_switch_z]);
+			translate([step_x,0,boat_switch_z-step_z]) cube([boat_switch_x-2*step_x,boat_switch_y,step_z+zff]);
+			translate([2*step_x,0,boat_switch_z-2*step_z]) cube([boat_switch_x-4*step_x,boat_switch_y,step_z+zff]);
+			translate([3*step_x,0,boat_switch_z-3*step_z]) cube([boat_switch_x-6*step_x,boat_switch_y,step_z+zff]);
+		}
+		translate([0,0,boat_switch_z/4]) rotate([90,0,0]) translate([0,0,-boat_switch_y/2-zff]) cylinder(r=1.5,h=boat_switch_y+2*zff);
+		translate([0,0,boat_switch_z/4]) scale([1.5,1,1.2]) rotate([90,0,0]) translate([0,0,-((3ts_stem_dia)+2+hinge_clearance)/2]) cylinder(r=4,h=(3ts_stem_dia)+2+hinge_clearance);
+	}
+}*/
+
+module boat_switch()
+{
+	// Based on measurements from a boat switch on the TM warthog
+	boat_switch_x = 20;
+	boat_switch_y = 10;
+	boat_switch_z = 10;
+	step_x = 2.5;
+	step_z = 0.8;
+	
+	hinge_clearance = 0.5;
+	
+	difference()
+	{
+		translate([-boat_switch_x/2,-boat_switch_y/2,0]) difference()
+		{
+			cube([boat_switch_x,boat_switch_y,boat_switch_z]);
+			translate([step_x,0,boat_switch_z-step_z]) cube([boat_switch_x-2*step_x,boat_switch_y,step_z+zff]);
+			translate([2*step_x,0,boat_switch_z-2*step_z]) cube([boat_switch_x-4*step_x,boat_switch_y,step_z+zff]);
+			translate([3*step_x,0,boat_switch_z-3*step_z]) cube([boat_switch_x-6*step_x,boat_switch_y,step_z+zff]);
+		}		
+		#cylinder(r=1.5,h=7);
+	}
+}
+
+module china_switch()
+{
+	// Based on measurements from a boat switch on the TM warthog
+	china_switch_x = 20;
+	china_switch_y = 10;
+	china_switch_z = 10;
+	plateau = 4;
+	
+	difference()
+	{
+		translate([-china_switch_x/2,-china_switch_y/2,0]) difference()
+		{
+			cube([china_switch_x,china_switch_y,china_switch_z]);
+			scale([1,1,0.5]) translate([-plateau/2,0,china_switch_z*2]) rotate([90,0,0]) translate([0,0,-china_switch_y-zff]) cylinder(r=10,h=china_switch_y+2*zff);
+			scale([1,1,0.5]) translate([china_switch_x+plateau/2,0,china_switch_z*2]) rotate([90,0,0]) translate([0,0,-china_switch_y-zff]) cylinder(r=10,h=china_switch_y+2*zff);
+			
+		}		
+		cylinder(r=1.5,h=7);
+	}
+}
 
 explodedist = 0;
 //throttle_endplate();
@@ -247,7 +313,8 @@ explodedist = 0;
 
 //throttle_right();
 
-switch_hat();
+//switch_hinge();
+china_switch();
 
 if (0)
 {
