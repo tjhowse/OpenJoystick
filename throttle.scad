@@ -228,15 +228,10 @@ module 3_throw_1_no(position)
 	spring_dia = 4.5;
 	spring_offset = 1;
 	
-	switch_slot_wide_factor = 1.1;
-	switch_slot_z = 4.1;
-	switch_slot_x = 4;
-	
 	3_throw_switch(position);
 	
-	translate([-(switch_slot_x/2),0,3ts_thread_z+switch_slot_z/2-2*zff]) cube([switch_slot_x,3ts_stem_dia*switch_slot_wide_factor,switch_slot_z],true);
-	translate([-3ts_stem_dia/2,0,3ts_thread_z+spring_dia/2]) rotate([0,-90-spring_angle,0]) cylinder(r=spring_dia/2,h=spring_length);
-	
+	translate([-boat_switch_x/2+pb_xy/2,0,plate_thickness-pb_z/2+0.5]) rotate([0,0,-90]) pb(1.02,1);
+	translate([-boat_switch_x/2-pb_leg_z/2,0,plate_thickness]) rotate([0,0,-90]) cube([pb_xy*1.02,pb_leg_z,plate_thickness],true);
 }
 
 module 3_throw_switch_voids()
@@ -261,20 +256,11 @@ module 3_throw_1_no_adds()
 	guide_z = 4;
 	translate([-boat_switch_x/2,boat_switch_y/2,0]) cube([boat_switch_x,2,9]);
 	translate([-boat_switch_x/2,-boat_switch_y/2-2,0]) cube([boat_switch_x,2,9]);
-	difference()
-	{
-		translate([-boat_switch_x/4,0,guide_z/2]) cube([boat_switch_x/2,boat_switch_y,guide_z],true);
-		translate([-boat_switch_x/4,0,guide_z]) rotate([0,-20,0]) cube([boat_switch_x,boat_switch_y,guide_z],true);
-	}
-	
+
 }
 
 module boat_switch()
-{
-
-	
-	hinge_clearance = 0.5;
-	
+{		
 	difference()
 	{
 		translate([-boat_switch_x/2,-boat_switch_y/2,0]) difference()
@@ -310,8 +296,30 @@ module china_switch()
 	}
 }
 
+module airbrake_switch()
+{
+	ridge_z = 1;
+	ridge_x = 1;
+	rotate([-90,0,0])
+	difference()
+	{
+		translate([-boat_switch_x/2,-boat_switch_y/2,0]) union()
+		{
+			cube([boat_switch_x,boat_switch_y,boat_switch_z]);
+			translate([0,0,boat_switch_z]) cube([ridge_x*2,boat_switch_y,ridge_z]);
+			translate([boat_switch_x/3-ridge_x/2,0,boat_switch_z]) cube([ridge_x,boat_switch_y,ridge_z]);
+			translate([(2*boat_switch_x)/3-ridge_x/2,0,boat_switch_z]) cube([ridge_x,boat_switch_y,ridge_z]);
+			translate([boat_switch_x-ridge_x*2,0,boat_switch_z]) cube([ridge_x*2,boat_switch_y,ridge_z]);
+					
+			translate([1,0,-3ts_stem_z+7+zff]) cube([boat_switch_x/3,boat_switch_y,3ts_stem_z-7]);
+		}		
+		cylinder(r=1.5,h=7);
+	}
+}
+
 explodedist = 0;
-throttle_endplate();
+//throttle_endplate();
+scale([1,1,0.85]) airbrake_switch();
 
 //throttle_backplate();
 
