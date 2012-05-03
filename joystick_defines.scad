@@ -169,9 +169,16 @@ module pb(puff, legdir)
 module bolt(cap_r, cap_z, shaft_r, shaft_z,slot_len)
 {
 	// Hex head bolt for holding head together
-	cylinder(r=cap_r,h=cap_z);
-	translate([0,0,cap_z]) cylinder(r=shaft_r+0.15, h=slot_len);
-	translate([0,0,cap_z+slot_len]) cylinder(r=shaft_r, h=shaft_z-slot_len);
+	if (shaft_z <= slot_len)
+	{
+		echo("NO! Don't make the threaded length the same as the total.");
+	}
+	union()
+	{
+		cylinder(r=cap_r,h=cap_z);
+		translate([0,0,cap_z]) cylinder(r=shaft_r+0.15, h=slot_len);
+		translate([0,0,cap_z+slot_len]) cylinder(r=shaft_r, h=shaft_z-slot_len);
+	}
 }
 
 module fillet(radius, length)

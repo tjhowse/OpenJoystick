@@ -29,7 +29,7 @@ inner_gimbal_total_y = inner_gimbal_y+2*bearing_retain_thickness;
 
 joiner_z = 10;
 joiner_x = 10;
-joiner_stem_scalar = 4;
+joiner_peg_height = 56;
 support_stem_beef = 1;
 
 temp = joiner_z/2;
@@ -59,6 +59,14 @@ magnet_z = 5;
 // Might abandon this if the bolts/spring cause magnetic annoyances.
 springbar_extra = 2;
 
+arc_z = 2;
+arc_ridge_z = 1;
+arc_ridge_x = 1;
+arc_ridge_spacing_deg = 5;
+arc_outer_radius = inner_gimbal_z/2+base_support_height-12-joiner_peg_z+joiner_peg_height;
+arc_y = 15;
+arc_range = 30;
+
 module joystick_joiner()
 {
 	total_y = inner_gimbal_y+2*bearing_retain_thickness-2*bearing_thickness;
@@ -68,7 +76,8 @@ module joystick_joiner()
 	{
 		union()
 		{
-			scale([1,1,joiner_stem_scalar]) joystick_handle_peg(0);
+			//scale([1,1,joiner_stem_scalar]) joystick_handle_peg(0);
+			joystick_gimbal_peg();
 			translate([-joiner_x/2,-total_y/2,0]) cube([joiner_x,total_y,joiner_z]);
 		}
 		//translate([0,total_y/2+zff,joiner_z/2]) rotate([-90,0,0]) %bearing(1);
@@ -346,6 +355,77 @@ module gimbal_alignment_jig()
 	}
 }
 
+module gimbal_calibration_arc()
+{
+
+
+	difference()
+	{
+		cylinder(r=arc_outer_radius,h=arc_z);
+		cylinder(r=arc_outer_radius-arc_y,h=arc_z);
+		translate([-arc_outer_radius,-2*arc_outer_radius,-zff]) cube([2*arc_outer_radius,2*arc_outer_radius,20]);
+	}
+	for (i = [90-arc_range:arc_ridge_spacing_deg:arc_range+90])
+	{
+		rotate([0,0,i]) translate([arc_outer_radius-arc_y,-(arc_ridge_x/2),arc_z]) cube([arc_y-1,arc_ridge_x,arc_ridge_z]);
+	}
+}
+
+module gimbal_calibration_hat()
+{
+	slot_x = 4.63;
+	slot_y = 4.25;
+	wall_thickness = 2.25;
+	hat_z = 15;
+	hat_lid_z = 2;
+	
+	clip_gap = arc_z+0.5;
+	clip_x = 2;
+	clip_y = 8;
+	
+	difference()
+	{
+		//cylinder(r=(shaft_dia/2)+wall_thickness,h=hat_z);
+		translate([(clip_gap+clip_x)/2,(clip_gap+clip_x)/2,hat_z/2]) cube([shaft_dia+wall_thickness+clip_gap+clip_x,shaft_dia+wall_thickness+clip_gap+clip_x,hat_z],true);
+		translate([0,0,-zff]) cylinder(r=(shaft_dia/2)+0.15,h=hat_z-hat_lid_z+2*zff);
+		
+		translate([(shaft_dia+wall_thickness)/2+clip_gap/2,0,hat_z/2+clip_x]) cube([clip_gap,shaft_dia+wall_thickness,hat_z],true);
+		rotate([0,0,90]) translate([(shaft_dia+wall_thickness)/2+clip_gap/2,0,hat_z/2+clip_x]) cube([clip_gap,shaft_dia+wall_thickness,hat_z],true);
+		
+		translate([(shaft_dia+wall_thickness)/2,(shaft_dia+wall_thickness)/2,0]) cube([clip_gap+clip_x,clip_gap+clip_x,hat_z]);
+	}
+	
+	translate([-(shaft_dia+wall_thickness)/2,-slot_y/2,0]) cube([slot_x,slot_y,hat_z]);
+	rotate([0,0,180]) translate([-(shaft_dia+wall_thickness)/2,-slot_y/2,0]) cube([slot_x,slot_y,hat_z]);
+	//translate([0,0,hat_z+hat_lid_z/2]) cube([shaft_dia+wall_thickness,shaft_dia+wall_thickness,hat_lid_z],true);
+	
+	
+	
+}
+
+module joystick_gimbal_peg()
+{
+	
+	support_width = shaft_dia;
+	
+	difference()
+	{
+		cylinder(h = joiner_peg_height, r = (shaft_dia/2));
+		union()
+		{
+			translate([(shaft_dia/2)-2,0,joiner_peg_height/2]) cube([5,5,joiner_peg_height*2],true);
+			translate([(-shaft_dia/2)+2,0,joiner_peg_height/2]) cube([5,5,joiner_peg_height*2],true);
+			translate([0,0,-0.5]) cylinder(r=0.5,h=joiner_peg_height);
+		}
+	}
+}
+
+
+//rotate([90,0,0]) gimbal_calibration_arc();
+//gimbal_calibration_arc();
+translate([0,0,50]) gimbal_calibration_hat();
+//joystick_joiner();
+
 //translate([0,inner_gimbal_y/2+4+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,90]) joystick_stem_plug(4,0);
 //rotate([0,0,180]) translate([0,inner_gimbal_y/2+springbar_z+bearing_retain_thickness,0]) rotate([90,0,0]) rotate([0,0,-90]) joystick_stem_plug_springbar(inner_gimbal_clearance);
 //translate([30,0,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
@@ -354,10 +434,10 @@ module gimbal_alignment_jig()
 //temp_stem_extender();
 //joystick_joiner();
 //joystick_y_padding_washer();
-/*
-test_x = 0;
-test_y = 20;
-translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) rotate([0,test_y,0]) translate([0,0,-5])  union()
+
+/*test_x = 0;
+test_y = 0;
+translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) rotate([0,test_y,0]) translate([0,0,-joiner_peg_z])  union()
 {
 	joystick_joiner();
 	translate([0,0,-9]) joystick_magnet_holder(10.5,7);
@@ -371,7 +451,8 @@ translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) jo
 joystick_base();
 translate([0,0,inner_gimbal_z/2+base_support_height-10]) gimbal_alignment_jig();
 */
-joystick_magnet_holder(10.5,7);
+
+//joystick_magnet_holder(10.5,7);
 
 //translate([0,50,0]) joystick_base();
 
