@@ -183,7 +183,7 @@ module bolt(cap_r, cap_z, shaft_r, shaft_z,slot_len)
 
 module fillet(radius, length)
 {
-	difference()
+	translate([-zff,0,-zff]) difference()
 	{
 		cube([radius,length,radius]);
 		translate([radius,length+zff,radius]) rotate([90,0,0]) cylinder(r=radius,h=length+2*zff);
