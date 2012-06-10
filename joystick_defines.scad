@@ -89,6 +89,8 @@ lever_switch_z = 5.8;
 4_way_hat_wire_gap = 3;
 4_way_hat_cutout_z = 4_way_hat_base_z + 4_way_hat_base_screw_head_thk;
 
+4_way_hat_peg_stem_hole_z = 4;
+
 // Grip sizes
 grip_height = 100;
 grip_diameter = 44;

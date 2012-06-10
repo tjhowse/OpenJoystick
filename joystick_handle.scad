@@ -20,6 +20,8 @@ include <joystick_defines.scad>
 use <joystick_4_way_hat_mk1.scad>
 use <joystick_head.scad>
 
+big_cms_stem_support_z = 2.9;
+
 module joystick_handle()
 {
 	trigger_cutout_z = 20;
@@ -203,34 +205,64 @@ module cms_stem(bolt)
 					translate([0,0,grip_cms_stub_length-4_way_hat_base_z+zff]) rotate([0,0,grip_cms_twist]) hat_voids(4);
 					translate([0,0,-zff]) cylinder(h = grip_cms_stub_length-4_way_hat_base_z+3*zff, r = grip_cms_stub_diameter/2-1.6);
 				}
-				// Support material experiement
-				cms_stem_support(0.7);
-				rotate([0,0,90]) cms_stem_support(0.6);
+				// Support material experiment
+				rotate([0,0,grip_cms_twist])
+				{
+					//cms_stem_support(0.74);
+					cms_stem_support(big_cms_stem_support_z);
+					//rotate([0,0,90]) cms_stem_support(0.77);
+					rotate([0,0,90]) cms_stem_support(1.7);
+				}
 			}
 			translate([bolt_x,bolt_y,bolt_z]) rotate([0,90,0]) bolt(3,3+10,1.45,20,17);
+			translate([0,(grip_cms_stub_diameter/2)-1.6,8]) rotate([0,0,0]) scale([1.1,1.1,1.1]) #cms_hat_stem(0);
 		}
 	}
 }
 
-module cms_stem_support(support_start_z)
+module cms_stem_support(support_z)
 {
 	support_x = 3.2;
 	support_thickness = extrusion_width; // My extrusion width.
-	//support_start_z = 0.6;
+	//support_start_z = 0.75;
+	//support_z = (1-support_start_z)*grip_cms_stub_length-4_way_hat_base_z;
 
 	//translate([support_x,0,(grip_cms_stub_length*support_start_z-4_way_hat_base_z)]) cube([support_thickness,4_way_hat_base_dia*0.8,(grip_cms_stub_length*support_start_z-4_way_hat_base_z)],true);
 	//translate([-support_x,0,(grip_cms_stub_length*support_start_z-4_way_hat_base_z)]) cube([support_thickness,4_way_hat_base_dia*0.8,(grip_cms_stub_length*support_start_z-4_way_hat_base_z)],true);
-	translate([-support_x-support_thickness/2,-(4_way_hat_base_dia*0.8/2),grip_cms_stub_length*support_start_z])
-		cube([support_thickness,4_way_hat_base_dia*0.8,(1-support_start_z)*grip_cms_stub_length-4_way_hat_base_z]);
-	translate([support_x-support_thickness/2,-(4_way_hat_base_dia*0.8/2),grip_cms_stub_length*support_start_z])
-		cube([support_thickness,4_way_hat_base_dia*0.8,(1-support_start_z)*grip_cms_stub_length-4_way_hat_base_z]);
+	translate([-support_x-support_thickness/2,-(4_way_hat_base_dia*0.8/2),grip_cms_stub_length-4_way_hat_base_z-support_z])
+		cube([support_thickness,4_way_hat_base_dia*0.8,support_z]);
+	translate([support_x-support_thickness/2,-(4_way_hat_base_dia*0.8/2),grip_cms_stub_length-4_way_hat_base_z-support_z])
+		cube([support_thickness,4_way_hat_base_dia*0.8,support_z]);
 	
 }
+
+module cms_hat_stem(hole)
+{
+	//height = 15;
+	socket_z = 5;
+	height = 4_way_hat_base_z+big_cms_stem_support_z+4_way_hat_peg_stem_hole_z;
+	//bolt(8.5/2, 1.5, 4.5/2, height,0);
+	difference()
+	{
+		cylinder(r=8.5/2,h=1.5+socket_z);
+		if(hole)
+		{
+			cylinder(r=1.7,h=socket_z);
+		}
+	}
+	translate([0,0,1.5+socket_z]) cylinder(r=4.5/2, h=height);
+}
+
 //%cube([100,100,220],true);
 
-left_handed = 0;
-joystick_handle();
+//left_handed = 0;
+//joystick_handle();
+cms_stem(0);
+//translate([0,0,23]) cms_hat_stem(1);
 
+//cms_hat_stem();
+
+//switch_hat_saddle();
 //joystick_handle_parts(2);
 //joystick_handle_parts(1);
 //joystick_handle_peg();

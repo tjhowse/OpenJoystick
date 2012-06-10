@@ -34,7 +34,7 @@ support_stem_beef = 1;
 
 temp = joiner_z/2;
 
-springbar_offset = 3;
+springbar_offset = 3.5;
 springbar_y = 20;
 springbar_z = 5;
 springbar_x = 8;
@@ -472,7 +472,7 @@ module joystick_gimbal_peg()
 //translate([13,0,0]) joystick_stem_plug(2,inner_gimbal_clearance);
 
 //temp_stem_extender();
-joystick_joiner();
+//joystick_joiner();
 //joystick_y_padding_washer();
 test_x = 0;
 test_y = 0;
@@ -497,10 +497,10 @@ if (0)
 /*
 translate([-15,-15,0]) joystick_stem_plug_springbar(0);
 translate([15,-15,0]) joystick_stem_plug_springbar(0);
-
+*/
 translate([15,15,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
 translate([-15,15,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
-*/
+
 //joystick_magnet_holder(10.5,7);
 
 //joystick_base();

@@ -87,7 +87,7 @@ module switch_hat_saddle()
 {
 	step_size = 2; // Won't really work for anything other than 2, sorry.
 	num_steps = 4_way_hat_base_dia / step_size;
-	switch_hat_saddle_base_depth = 4;
+	switch_hat_saddle_base_depth = 4_way_hat_peg_stem_hole_z;
 
 
 	union()
@@ -106,7 +106,7 @@ module switch_hat_saddle()
 		{
 			cylinder(r = (4_way_hat_base_dia/2), h = switch_hat_saddle_base_depth, $fn=circle_faces);
 			translate([0,0,-zff])
-				cylinder(r=(4_way_hat_base_screw_dia/2), h =switch_hat_saddle_base_depth, $fn=circle_faces);
+				#cylinder(r=(4_way_hat_base_screw_dia/2), h =switch_hat_saddle_base_depth, $fn=circle_faces);
 		}
 	}
 }
@@ -128,7 +128,7 @@ module switch_hat_hanoi()
 			}
 		}
 		translate([0,0,-zff])
-			cylinder(r=(4_way_hat_base_screw_dia/2), h = 4, $fn=circle_faces);
+			cylinder(r=(4_way_hat_base_screw_dia/2), h = 4_way_hat_peg_stem_hole_z, $fn=circle_faces);
 	}	
 }
 
