@@ -187,6 +187,13 @@ module cms_stem(bolt)
 	bolt_x = -22;
 	bolt_y = grip_cms_stub_diameter/4+1.3;
 	bolt_z = 18;
+	
+	baseplug_z = pb_z+1;
+	
+	pb_puff = 1.05;
+	pb_xy_puff = pb_xy*pb_puff;
+	pb_z_puff = pb_z*pb_puff;
+	
 
 	//grip_cms_twist = 20;
 	if (bolt)
@@ -203,8 +210,13 @@ module cms_stem(bolt)
 				{
 					cylinder(h = grip_cms_stub_length, r = (grip_cms_stub_diameter/2));
 					translate([0,0,grip_cms_stub_length-4_way_hat_base_z+zff]) rotate([0,0,grip_cms_twist]) hat_voids(4);
-					translate([0,0,-zff]) cylinder(h = grip_cms_stub_length-4_way_hat_base_z+3*zff, r = grip_cms_stub_diameter/2-1.6);
+					translate([0,0,-zff+baseplug_z]) cylinder(r = grip_cms_stub_diameter/2-1.6,h = grip_cms_stub_length-4_way_hat_base_z+3*zff-baseplug_z);
+					translate([0,0,-zff]) cylinder(r = 2.25, h = baseplug_z+zff);
+					
+					translate([-pb_xy_puff/2,-pb_xy_puff/2,1]) cube([pb_xy_puff,20,pb_z_puff]);
+					
 				}
+				translate([0,0,1]) rotate([0,0,180]) scale([1,1,1]) pb(1.1, 0);
 				// Support material experiment
 				rotate([0,0,grip_cms_twist])
 				{
@@ -215,8 +227,24 @@ module cms_stem(bolt)
 				}
 			}
 			translate([bolt_x,bolt_y,bolt_z]) rotate([0,90,0]) bolt(3,3+10,1.45,20,17);
-			translate([0,(grip_cms_stub_diameter/2)-1.6,8]) rotate([0,0,0]) scale([1.1,1.1,1.1]) #cms_hat_stem(0);
+			translate([0,(grip_cms_stub_diameter/2)-1.6,baseplug_z]) rotate([0,0,0]) scale([1.1,1.1,1.1]) hull(){cms_hat_stem(0);}
 		}
+	}
+}
+
+module cms_stem_retainer()
+{
+	guide_z = 2;
+	wire_clearance = 1.4;
+	wire_gap = 3.5;
+	pb_puff = 1.05;
+	
+	cube([pb_xy,pb_xy*pb_puff-1,pb_z+guide_z-wire_clearance]);
+	translate([(pb_xy-wire_gap)/2,0,pb_z+guide_z-wire_clearance]) cube([wire_gap,pb_xy*pb_puff-1,wire_clearance]);
+	translate([0,-pb_xy*pb_puff,0]) difference()
+	{
+		cube([pb_xy,pb_xy*pb_puff,guide_z]);
+		translate([pb_xy/2,pb_xy*pb_puff/2,0]) cylinder(r=2,h=10);
 	}
 }
 
@@ -247,20 +275,24 @@ module cms_hat_stem(hole)
 		cylinder(r=8.5/2,h=1.5+socket_z);
 		if(hole)
 		{
-			cylinder(r=1.7,h=socket_z);
+			cylinder(r=1.55,h=socket_z);
 		}
 	}
-	translate([0,0,1.5+socket_z]) cylinder(r=4.5/2, h=height);
+	translate([0,0,1.5+socket_z-zff]) cylinder(r=4.5/2, h=height);
 }
 
 //%cube([100,100,220],true);
 
 //left_handed = 0;
 //joystick_handle();
-cms_stem(0);
+//cms_stem(0);
+//rotate([0,180,0]) translate([-pb_xy/2,2.5,-7]) %cms_stem_retainer();
+
+translate([0,20,0]) cms_stem_retainer();
+//translate([pb_xy/2,17,7]) rotate([180,0,0]) pb(1.1, 0);
 //translate([0,0,23]) cms_hat_stem(1);
 
-//cms_hat_stem();
+//cms_hat_stem(1);
 
 //switch_hat_saddle();
 //joystick_handle_parts(2);

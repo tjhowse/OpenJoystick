@@ -49,6 +49,7 @@ joiner_peg_z = 5;
 joiner_peg_xy = bearing_inside_dia / sqrt(2);
 
 base_support_height = 25;
+gimbal_base_z = 5;
 inner_gimbal_clearance = 2;
 
 magnet_d = 10;
@@ -183,7 +184,7 @@ module joystick_base()
 	
 	base_x = inner_gimbal_total_x - bearing_thickness*2 - bearing_retain_thickness*2-inner_gimbal_clearance;
 	base_y = inner_gimbal_total_y + mounting_extra_y;
-	base_z = 5;
+	base_z = gimbal_base_z;
 	
 	fillet_radius = 5;
 	
@@ -234,6 +235,7 @@ module joystick_base()
 					}
 					
 				}
+			soic8_surfboard_holder();
 		}
 		
 		// Mounting bolts
@@ -270,7 +272,7 @@ module joystick_stem_plug(lip_size, extrapeg)
 	{
 		union()
 		{
-			translate([0,0,lip_size]) cylinder(r=bearing_inside_dia/2-0.05,h=bearing_thickness);
+			translate([0,0,lip_size]) cylinder(r=bearing_inside_dia/2-0.2,h=bearing_thickness);
 			cylinder(r=bearing_inside_dia/2+1,h=lip_size);
 			rotate([0,0,90]) translate([-(joiner_peg_xy-peg_clearance)/2,-(joiner_peg_xy-peg_clearance)/2, bearing_thickness+lip_size]) cube([(joiner_peg_xy-peg_clearance),(joiner_peg_xy-peg_clearance),joiner_peg_z+extrapeg]);
 		}
@@ -458,7 +460,34 @@ module joystick_gimbal_peg()
 	}
 }
 
-
+module soic8_surfboard_holder()
+{
+	puff = 0.4;
+	surf_x = 16.7+puff;
+	surf_y = 30.5+puff;
+	surf_z = 0.8*1.3;
+	lip_xy = 2;
+	lip_z = 1;	
+	mlx_centre_offset_y = 0.75;
+	clip_xz = 1;
+	clip_y = 5;
+	
+	//gimbal_base_z = 2;
+	
+	translate([0,mlx_centre_offset_y,(gimbal_base_z+lip_z)/2]) difference()
+	{
+		union()
+		{
+			cube([surf_x+lip_xy,surf_y+lip_xy,gimbal_base_z+lip_z],true);
+			difference()
+			{
+				translate([0,0,clip_xz/2]) cube([surf_x+lip_xy,clip_y,gimbal_base_z+lip_z+clip_xz],true);
+				translate([0,0,clip_xz/2]) cube([surf_x+lip_xy-3*clip_xz,clip_y,gimbal_base_z+lip_z+clip_xz],true); // This is crap. Fix it.
+			}
+		}
+		translate([0,0,(gimbal_base_z+lip_z)/2+surf_z/2-lip_z]) cube([surf_x,surf_y,surf_z],true);	
+	}
+}
 //translate([0,-10,0]) rotate([90,0,0]) gimbal_calibration_arc();
 //gimbal_calibration_arc();
 //translate([0,0,50]) gimbal_calibration_hat();
@@ -476,7 +505,7 @@ module joystick_gimbal_peg()
 //joystick_y_padding_washer();
 test_x = 0;
 test_y = 0;
-if (0)
+if (1)
 {
 	translate([0,0,inner_gimbal_z/2+base_support_height-12]) rotate([test_x,0,0]) rotate([0,test_y,0]) translate([0,0,-joiner_peg_z])  union()
 	{
@@ -494,16 +523,21 @@ if (0)
 }
 //joystick_y_padding_washer();
 //joystick_inner_gimbal();
-/*
-translate([-15,-15,0]) joystick_stem_plug_springbar(0);
-translate([15,-15,0]) joystick_stem_plug_springbar(0);
+
+//translate([-15,-15,0]) joystick_stem_plug_springbar(0);
+/*translate([15,-15,0]) joystick_stem_plug_springbar(0);
 */
-translate([15,15,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
-translate([-15,15,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
+//translate([15,15,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
+//translate([-15,15,0]) joystick_stem_plug_springbar(inner_gimbal_clearance);
 
 //joystick_magnet_holder(10.5,7);
 
+//joystick_stem_plug_springbar(inner_gimbal_clearance);
+//gimbal_calibration_hat();
+
 //joystick_base();
+
+//soic8_surfboard_holder();
 //fillet(10,10);
 
 
