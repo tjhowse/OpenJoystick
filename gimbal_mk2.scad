@@ -51,12 +51,11 @@ module m8_bolt(length,slotblock)
 	}
 }
 
-
 module y_axis()
 {
 	total_z = bearing_thickness*2;
 	
-	total_y = (outer_spring_pegs/2+spring_peg_r+wall_thickness+m8_bolt_head_z+wall_thickness)*2;
+	total_y = (outer_spring_pegs/2+spring_peg_r+wall_thickness)*2;
 	total_x = (m8_bolt_head_min_r+wall_thickness)*2;
 	
 	edge_chord = 2*sqrt(pow((bearing_outside_dia+wall_thickness*2)/2,2)-pow(total_x/2,2));
@@ -73,8 +72,10 @@ module y_axis()
 				
 		translate([0,0,-total_z/2])cylinder(r=bearing_outside_dia/2,h=total_z);
 				
-		translate([0,-total_y/2+wall_thickness+m8_bolt_head_z,0]) rotate([90,0,00]) m8_bolt(10,1);
-		rotate([0,0,180]) translate([0,-total_y/2+wall_thickness+m8_bolt_head_z,0]) rotate([90,0,00]) m8_bolt(10,1);
+		//translate([0,-total_y/2+wall_thickness+m8_bolt_head_z,0]) rotate([90,0,0]) #m8_bolt(10,1);
+		translate([0,-bearing_outside_dia/2-wall_thickness,0]) rotate([90,0,0]) m8_bolt(10,1);
+		rotate([0,0,180]) translate([0,-bearing_outside_dia/2-wall_thickness,0]) rotate([90,0,0]) m8_bolt(10,1);
+		//rotate([0,0,180]) translate([0,-total_y/2+wall_thickness+m8_bolt_head_z,0]) rotate([90,0,0]) m8_bolt(10,1);
 		
 		// Spring pegs * 2
 		translate([spring_z_offset,-outer_spring_pegs/2,-total_z/2]) #cylinder(r=spring_peg_r,h=total_z);
@@ -83,10 +84,10 @@ module y_axis()
 		rotate([0,0,180]) translate([spring_z_offset,-outer_spring_pegs/2,-total_z/2]) #cylinder(r=spring_peg_r,h=total_z);
 		
 		// Cutaway * 4
-		translate([total_x/2,edge_chord/2+(y_cutaway_bite_r*y_cutaway_bite_stretch),-bearing_thickness]) scale([1,y_cutaway_bite_stretch,1]) cylinder(r=y_cutaway_bite_r,h=bearing_thickness*2);
+		/*translate([total_x/2,edge_chord/2+(y_cutaway_bite_r*y_cutaway_bite_stretch),-bearing_thickness]) scale([1,y_cutaway_bite_stretch,1]) cylinder(r=y_cutaway_bite_r,h=bearing_thickness*2);
 		translate([-total_x/2,edge_chord/2+(y_cutaway_bite_r*y_cutaway_bite_stretch),-bearing_thickness]) scale([1,y_cutaway_bite_stretch,1]) cylinder(r=y_cutaway_bite_r,h=bearing_thickness*2);
 		rotate([0,0,180]) translate([total_x/2,edge_chord/2+(y_cutaway_bite_r*y_cutaway_bite_stretch),-bearing_thickness]) scale([1,y_cutaway_bite_stretch,1]) cylinder(r=y_cutaway_bite_r,h=bearing_thickness*2);
-		rotate([0,0,180]) translate([-total_x/2,edge_chord/2+(y_cutaway_bite_r*y_cutaway_bite_stretch),-bearing_thickness]) scale([1,y_cutaway_bite_stretch,1]) cylinder(r=y_cutaway_bite_r,h=bearing_thickness*2);
+		rotate([0,0,180]) translate([-total_x/2,edge_chord/2+(y_cutaway_bite_r*y_cutaway_bite_stretch),-bearing_thickness]) scale([1,y_cutaway_bite_stretch,1]) cylinder(r=y_cutaway_bite_r,h=bearing_thickness*2);*/
 		
 		// Clamp cut
 		
