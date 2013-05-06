@@ -27,28 +27,39 @@ m8_bolt_head_max_r = 14.55/2*m8_bolt_clearance;
 
 // These come from experimentally-discovered determined values for good springyness
 // using 1.5mm spring steel piano wire.
-outer_spring_pegs = 47;
+outer_spring_pegs = 50; // Try increasing this.
 inner_spring_pegs = 10;
 
 spring_peg_r = 1.5;
 
 bearing_outside_dia = 22*1.02;
 
-y_total_z = bearing_thickness*2;	
-y_total_y = (outer_spring_pegs/2+spring_peg_r+wall_thickness)*2;
-y_total_x = (m8_bolt_head_min_r+wall_thickness)*2;
+y_clearance = 3; // Two washers' worth
+anchor_clearance = 3;
+z_clearance = 2;
+z_extra_bolt_clearance = 1;
+
+y_extra_sleeve_clearance = 2;
 
 y_pegs_offset = bearing_inside_dia/2 + (bearing_inside_dia/2+bearing_inside_dia/2)/2-spring_peg_r;
 
-spring_z_offset = 3.5;
-spring_peg_sleeve_r = y_pegs_offset-3.5;
+//spring_z_offset = 2;
+spring_z_offset = 2*spring_peg_r;
+//spring_z_offset = 0;
+spring_peg_sleeve_r = y_pegs_offset-spring_peg_r-(spring_z_offset-2*spring_peg_r);
+
+spring_wire_r = 1.5/2;
+
+y_total_z = bearing_thickness*2;	
+y_total_y = outer_spring_pegs+spring_peg_sleeve_r*2+spring_wire_r*2+y_extra_sleeve_clearance;
+y_total_x = (m8_bolt_head_min_r+wall_thickness)*2;
 
 magnet_d = 10*1.1;
 magnet_z = 5;
 
-y_clearance = 3; // Two washers' worth
-z_clearance = 2;
-z_extra_bolt_clearance = 1;
+anchor_base_thickness = 2*wall_thickness;
+anchor_base_extra_height = 15;
+anchor_total_z = bearing_thickness*2;
 
 module m8_bolt(length,slotblock)
 {
@@ -82,11 +93,11 @@ module y_axis()
 				
 		translate([0,0,-y_total_z/2])cylinder(r=bearing_outside_dia/2,h=y_total_z);
 
-		translate([0,-bearing_outside_dia/2-wall_thickness,0]) rotate([90,0,0]) m8_bolt(10,1);
-		rotate([0,0,180]) translate([0,-bearing_outside_dia/2-wall_thickness,0]) rotate([90,0,0]) m8_bolt(10,1);
+		translate([0,-bearing_outside_dia/2-wall_thickness,0]) rotate([90,0,0]) m8_bolt(100,1);
+		rotate([0,0,180]) translate([0,-bearing_outside_dia/2-wall_thickness,0]) rotate([90,0,0]) m8_bolt(100,1);
 		
 		// Spring pegs * 2
-		translate([y_pegs_offset,-outer_spring_pegs/2,-y_total_z/2]) #cylinder(r=spring_peg_r,h=y_total_z);
+		translate([y_pegs_offset,-outer_spring_pegs/2,-y_total_z/2]) cylinder(r=spring_peg_r,h=y_total_z);
 		rotate([0,0,180]) translate([-y_pegs_offset,-outer_spring_pegs/2,-y_total_z/2]) cylinder(r=spring_peg_r,h=y_total_z);
 		translate([-y_pegs_offset,-outer_spring_pegs/2,-y_total_z/2]) cylinder(r=spring_peg_r,h=y_total_z);
 		rotate([0,0,180]) translate([y_pegs_offset,-outer_spring_pegs/2,-y_total_z/2]) cylinder(r=spring_peg_r,h=y_total_z);
@@ -135,7 +146,7 @@ module x_axis()
 			//translate([x_total_x/2,-(m8_bolt_head_max_r*2+wall_thickness)/2,-x_total_z/2]) difference ()
 			translate([zff,0,0]) rotate([0,90,0]) difference ()
 			{
-				#translate([0,0,x_total_x/2+nut_countersink/2]) cube([x_total_z,(m8_bolt_head_max_r)*2, nut_countersink],center=true);
+				translate([0,0,x_total_x/2+nut_countersink/2]) cube([x_total_z,(m8_bolt_head_max_r)*2, nut_countersink],center=true);
 				rotate([0,0,30]) cylinder(r=m8_bolt_head_max_r,h=100,$fn=6);
 			}
 		}
@@ -153,7 +164,12 @@ module x_axis()
 
 module bearing_clamp()
 {
-	y_total_z = bearing_thickness*2;
+	translate([0,0,bearing_thickness/2]) single_bearing_clamp();
+	translate([0,0,-bearing_thickness/2]) single_bearing_clamp();
+}
+
+module single_bearing_clamp()
+{
 	gap = 3;
 	clamp_bolt_r = spring_peg_r;
 
@@ -161,39 +177,86 @@ module bearing_clamp()
 	{
 		union()
 		{
-			translate([0,0,-y_total_z/2]) cylinder(r=bearing_outside_dia/2+wall_thickness,h=y_total_z);
-			translate([bearing_outside_dia/2-wall_thickness,0,0]) cube([wall_thickness*2+clamp_bolt_r*2+bearing_outside_dia/2, wall_thickness*3+gap,y_total_z],true);
+			translate([0,0,-bearing_thickness/2]) cylinder(r=bearing_outside_dia/2+wall_thickness,h=bearing_thickness);
+			translate([bearing_outside_dia/2-wall_thickness,0,0]) cube([wall_thickness*2+clamp_bolt_r*2+bearing_outside_dia/2, wall_thickness*3+gap,bearing_thickness],true);
 		}
-		translate([0,0,-y_total_z/2])cylinder(r=bearing_outside_dia/2,h=y_total_z);
-		translate([bearing_outside_dia/2-wall_thickness,0,0]) cube([wall_thickness*2+clamp_bolt_r*2+bearing_outside_dia/2, gap,y_total_z],true);
+		translate([0,0,-bearing_thickness/2]) cylinder(r=bearing_outside_dia/2,h=bearing_thickness);
+		translate([bearing_outside_dia/2-wall_thickness,0,0]) cube([wall_thickness*2+clamp_bolt_r*2+bearing_outside_dia/2, gap,bearing_thickness],true);
 		
-		translate([bearing_outside_dia/2+wall_thickness*2,wall_thickness/2,bearing_thickness/2]) rotate([90,0,0]) translate([0,0,-(wall_thickness*2+gap)/2]) cylinder(r=clamp_bolt_r,h=wall_thickness*3+gap);
-		translate([bearing_outside_dia/2+wall_thickness*2,wall_thickness/2,-bearing_thickness/2]) rotate([90,0,0]) translate([0,0,-(wall_thickness*2+gap)/2]) cylinder(r=clamp_bolt_r,h=wall_thickness*3+gap);
+		translate([bearing_outside_dia/2+wall_thickness*2,wall_thickness/2,0]) rotate([90,0,0]) translate([0,0,-(wall_thickness*2+gap)/2]) cylinder(r=clamp_bolt_r,h=wall_thickness*3+gap);
 	}
 }
+
 module spring_peg_sleeve()
 {
-	spring_peg_sleeve_z = m8_bolt_head_z+wall_thickness*3+y_clearance/2;
+	spring_peg_sleeve_z = m8_bolt_head_z+wall_thickness*1.5+y_clearance/2+spring_wire_r*2;
 	difference()
 	{
-		cylinder(r=spring_peg_sleeve_r,h=10);
-		cylinder(r=spring_peg_r,h=10);
+		union()
+		{
+			cylinder(r=spring_peg_sleeve_r+spring_wire_r,h=spring_peg_sleeve_z-spring_wire_r*2);
+			translate([0,0,spring_peg_sleeve_z-spring_wire_r*2]) cylinder(r1=spring_peg_sleeve_r+spring_wire_r,r2=spring_peg_sleeve_r,h=spring_wire_r);
+			translate([0,0,spring_peg_sleeve_z-spring_wire_r]) cylinder(r1=spring_peg_sleeve_r,r2=spring_peg_sleeve_r+spring_wire_r,h=spring_wire_r);
+			
+		}
+		cylinder(r=spring_peg_r,h=spring_peg_sleeve_z);
 	}		
 }
 
-//spring_peg_sleeve();
+module anchor()
+{
+	anchor_total_y = outer_spring_pegs+ 6*wall_thickness+6*spring_peg_r;	
+	anchor_post_x = bearing_outside_dia/2-spring_z_offset+spring_peg_r+wall_thickness+anchor_base_extra_height;
+	
+	difference()
+	{
+		union()
+		{
+			bearing_clamp();
+			translate([-(bearing_outside_dia/2+anchor_base_extra_height)/2,0,0]) cube([bearing_outside_dia/2+anchor_base_extra_height,bearing_outside_dia+2*wall_thickness,anchor_total_z],center=true);
+			translate([-(anchor_post_x)/2+spring_peg_r+wall_thickness-spring_z_offset,-outer_spring_pegs/2,0]) difference()
+			{
+				cube([anchor_post_x,spring_peg_r*2+2*wall_thickness,anchor_total_z],center=true);
+				translate([anchor_post_x/2-spring_peg_r-wall_thickness,0,-anchor_total_z/2]) cylinder(r=spring_peg_r,h=anchor_total_z);
+			}
+			translate([-(anchor_post_x)/2+spring_peg_r+wall_thickness-spring_z_offset,outer_spring_pegs/2,0]) difference()
+			{
+				cube([anchor_post_x,spring_peg_r*2+2*wall_thickness,anchor_total_z],center=true);
+				translate([anchor_post_x/2-spring_peg_r-wall_thickness,0,-anchor_total_z/2]) cylinder(r=spring_peg_r,h=anchor_total_z);
+			}
+			translate([-bearing_outside_dia/2-anchor_base_thickness/2-anchor_base_extra_height,0,0]) cube([anchor_base_thickness,anchor_total_y,anchor_total_z],center=true);
+		}
+		translate([0,0,-anchor_total_z/2]) cylinder(r=bearing_outside_dia/2,h=anchor_total_z);
+		
+		translate([0,outer_spring_pegs/2+2*spring_peg_r+2*wall_thickness,0]) rotate([0,-90,0]) cylinder(r=spring_peg_r,h=100);
+		translate([0,-(outer_spring_pegs/2+2*spring_peg_r+2*wall_thickness),0]) rotate([0,-90,0]) cylinder(r=spring_peg_r,h=100);
+	}
+
+}
+
 
 test_x = 0;
 test_y = 0;
-if (1)
+if (0)
 {
 	
 	rotate([test_x,test_y,0]) rotate([90,0,0]) x_axis();
 	rotate([0,test_y,0]) rotate([0,270,0]) y_axis();
-}
+	
+	translate([y_total_z/2,+outer_spring_pegs/2,y_pegs_offset]) rotate([0,90,0]) spring_peg_sleeve();
+	translate([y_total_z/2,-outer_spring_pegs/2,y_pegs_offset]) rotate([0,90,0]) spring_peg_sleeve();
+	translate([0,y_total_y/2+anchor_clearance/2+anchor_total_z/2,0]) rotate([0,270,90]) anchor();
+	translate([0,-(y_total_y/2+anchor_clearance/2+anchor_total_z/2),0]) rotate([0,270,90]) anchor();
+} else {
 
-//cube([100,50,10],center=true);
-//translate([0,0,15/2]) x_axis();
-//translate([30,0,y_total_z/2]) y_axis();
-//bearing_clamp();
-//m8_bolt(10,1);
+	anchor();
+	//single_bearing_clamp();
+	//bearing_clamp();
+	//spring_peg_sleeve();
+	//translate([0,20,0])spring_peg_sleeve();
+	//cube([100,50,10],center=true);
+	//translate([0,0,15/2]) x_axis();
+	//translate([30,0,y_total_z/2]) y_axis();
+	//bearing_clamp();
+	//m8_bolt(10,1);
+}
