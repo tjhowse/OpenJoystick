@@ -46,12 +46,14 @@ y_pegs_offset = bearing_inside_dia/2 + (bearing_inside_dia/2+bearing_inside_dia/
 //spring_z_offset = 2;
 spring_z_offset = 2*spring_peg_r;
 //spring_z_offset = 0;
-spring_peg_sleeve_r = y_pegs_offset-spring_peg_r-(spring_z_offset-2*spring_peg_r);
+spring_peg_sleeve_y = y_pegs_offset-spring_peg_r-(spring_z_offset-2*spring_peg_r);
+spring_peg_sleeve_x = y_pegs_offset-spring_peg_r-(spring_z_offset-2*spring_peg_r);
 
 spring_wire_r = 1.5/2;
 
 y_total_z = bearing_thickness*2;	
-y_total_y = outer_spring_pegs+spring_peg_sleeve_r*2+spring_wire_r*2+y_extra_sleeve_clearance;
+// y_total_y = outer_spring_pegs+spring_peg_sleeve_y*2+spring_wire_r*2+y_extra_sleeve_clearance;
+y_total_y = outer_spring_pegs+spring_peg_sleeve_y*2+y_extra_sleeve_clearance;
 y_total_x = (m8_bolt_head_min_r+wall_thickness)*2;
 
 magnet_d = 10*1.1;
@@ -60,6 +62,8 @@ magnet_z = 5;
 anchor_base_thickness = 2*wall_thickness;
 anchor_base_extra_height = 15;
 anchor_total_z = bearing_thickness*2;
+
+stem_socket_depth = 10;
 
 module m8_bolt(length,slothead,slotshaft)
 {
@@ -116,7 +120,7 @@ module y_axis()
 module x_axis()
 {	
 	//stem_socket_depth = spring_peg_r*2+wall_thickness;
-	stem_socket_depth =10;
+	
 	
 	x_hole_x = y_total_z+ y_clearance;
 	x_hole_y = bearing_outside_dia+wall_thickness*3 +spring_peg_r*2+z_clearance+z_extra_bolt_clearance;
@@ -125,8 +129,6 @@ module x_axis()
 	
 	x_total_x = x_hole_x + wall_thickness*3;
 	x_total_y = x_hole_y + wall_thickness*3+stem_socket_depth;
-	
-	shaft_length = 20;
 		
 	nut_countersink = m8_bolt_head_z;
 	difference()
@@ -200,9 +202,9 @@ module spring_peg_sleeve()
 	{
 		union()
 		{
-			cylinder(r=spring_peg_sleeve_r+spring_wire_r,h=spring_peg_sleeve_z-spring_wire_r*2);
-			translate([0,0,spring_peg_sleeve_z-spring_wire_r*2]) cylinder(r1=spring_peg_sleeve_r+spring_wire_r,r2=spring_peg_sleeve_r,h=spring_wire_r);
-			translate([0,0,spring_peg_sleeve_z-spring_wire_r]) cylinder(r1=spring_peg_sleeve_r,r2=spring_peg_sleeve_r+spring_wire_r,h=spring_wire_r);
+			cylinder(r=spring_peg_sleeve_y+spring_wire_r,h=spring_peg_sleeve_z-spring_wire_r*2);
+			translate([0,0,spring_peg_sleeve_z-spring_wire_r*2]) cylinder(r1=spring_peg_sleeve_y+spring_wire_r,r2=spring_peg_sleeve_y,h=spring_wire_r);
+			translate([0,0,spring_peg_sleeve_z-spring_wire_r]) cylinder(r1=spring_peg_sleeve_y,r2=spring_peg_sleeve_y+spring_wire_r,h=spring_wire_r);
 			
 		}
 		cylinder(r=spring_peg_r,h=spring_peg_sleeve_z);
@@ -255,25 +257,57 @@ module y_spring_hat()
 
 module shaft()
 {
-		
+	shaft_length = 40;
+	shaft_dia_scalar = 0.97;
+	difference()
+	{
+		cylinder(r=(shaft_dia*shaft_dia_scalar)/2,h=shaft_length);
+		translate([-shaft_dia/3,0,shaft_length/2]) cube([shaft_dia/2,shaft_dia/2,shaft_length],center=true);
+		translate([0,0,stem_socket_depth/2]) rotate([90,0,0]) translate([0,0,-50]) #cylinder(r=spring_peg_r,h=100);
+	}
 }
 
+module base()
+{
+	// Slapdash for testing.
+	base_length = 81.5+(spring_peg_r+wall_thickness)*2;
+	difference()
+	{
+		cube([base_length,10,5]);
+		translate([spring_peg_r+wall_thickness,5,0]) peg_bolt();
+		translate([base_length-spring_peg_r-wall_thickness,5,0]) peg_bolt();
+	}
+}
+module peg_bolt()
+{
+	cylinder(r=5.4/2,h=3);
+	translate([0,0,3]) cylinder(r=spring_peg_r,h=100);
+}
+
+
+// test_x = abs($t-0.5)*-80+20;
 test_x = 0;
+// test_y = abs($t-0.5)*-80+20;
 test_y = 0;
-if (0)
+
+if (1)
 {
 	
 	rotate([test_x,test_y,0]) rotate([90,0,0]) x_axis();
 	rotate([0,test_y,0]) rotate([0,270,0]) y_axis();
 	
-	translate([y_total_z/2,+outer_spring_pegs/2,y_pegs_offset]) rotate([0,90,0]) spring_peg_sleeve();
-	translate([y_total_z/2,-outer_spring_pegs/2,y_pegs_offset]) rotate([0,90,0]) spring_peg_sleeve();
+	rotate([0,test_y,0]) translate([y_total_z/2,+outer_spring_pegs/2,y_pegs_offset]) rotate([0,90,0]) spring_peg_sleeve();
+	rotate([0,test_y,0]) translate([y_total_z/2,-outer_spring_pegs/2,y_pegs_offset]) rotate([0,90,0]) spring_peg_sleeve();
 	translate([0,y_total_y/2+anchor_clearance/2+anchor_total_z/2,0]) rotate([0,270,90]) anchor();
 	translate([0,-(y_total_y/2+anchor_clearance/2+anchor_total_z/2),0]) rotate([0,270,90]) anchor();
-} else {
 
-	y_spring_hat();
+} else {
+	rotate([180,0,0]) base();
+	translate([0,20,0]) rotate([180,0,0]) base();
+	//y_spring_hat();
 	//y_axis();
+	//x_axis();
+	//shaft();
 	//anchor();
 	//single_bearing_clamp();
 	//bearing_clamp();
