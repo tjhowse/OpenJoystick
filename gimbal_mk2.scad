@@ -213,6 +213,7 @@ module spring_peg_sleeve()
 
 module anchor()
 {
+	spring_z_offset = 0;
 	anchor_total_y = outer_spring_pegs+ 6*wall_thickness+6*spring_peg_r;	
 	anchor_post_x = bearing_outside_dia/2-spring_z_offset+spring_peg_r+wall_thickness+anchor_base_extra_height;
 	
@@ -222,16 +223,14 @@ module anchor()
 		{
 			bearing_clamp();
 			translate([-(bearing_outside_dia/2+anchor_base_extra_height)/2,0,0]) cube([bearing_outside_dia/2+anchor_base_extra_height,bearing_outside_dia+2*wall_thickness,anchor_total_z],center=true);
-			translate([-(anchor_post_x)/2+spring_peg_r+wall_thickness-spring_z_offset,-outer_spring_pegs/2,0]) difference()
+			difference()
 			{
-				cube([anchor_post_x,spring_peg_r*2+2*wall_thickness,anchor_total_z],center=true);
-				translate([anchor_post_x/2-spring_peg_r-wall_thickness,0,-anchor_total_z/2]) cylinder(r=spring_peg_r,h=anchor_total_z);
+				translate([0,0,(anchor_total_z+(m8_bolt_head_z/m8_bolt_clearance)*2)/2-anchor_total_z/2]) cube([2*(spring_peg_r+wall_thickness),outer_spring_pegs+2*wall_thickness,anchor_total_z+(m8_bolt_head_z/m8_bolt_clearance)*2],center=true);
+				translate([0,-outer_spring_pegs/2+spring_peg_r,-anchor_total_z/2]) cylinder(r=spring_peg_r,h=anchor_total_z+(m8_bolt_head_z/m8_bolt_clearance)*2);
+				translate([0,outer_spring_pegs/2-spring_peg_r,-anchor_total_z/2]) cylinder(r=spring_peg_r,h=anchor_total_z+(m8_bolt_head_z/m8_bolt_clearance)*2);
+				translate([0,0,anchor_total_z/2]) cylinder(r=outer_spring_pegs/2-4*wall_thickness,h=(m8_bolt_head_z/m8_bolt_clearance)*2);
 			}
-			translate([-(anchor_post_x)/2+spring_peg_r+wall_thickness-spring_z_offset,outer_spring_pegs/2,0]) difference()
-			{
-				cube([anchor_post_x,spring_peg_r*2+2*wall_thickness,anchor_total_z],center=true);
-				translate([anchor_post_x/2-spring_peg_r-wall_thickness,0,-anchor_total_z/2]) cylinder(r=spring_peg_r,h=anchor_total_z);
-			}
+			
 			translate([-bearing_outside_dia/2-anchor_base_thickness/2-anchor_base_extra_height,0,0]) cube([anchor_base_thickness,anchor_total_y,anchor_total_z],center=true);
 		}
 		translate([0,0,-anchor_total_z/2]) cylinder(r=bearing_outside_dia/2,h=anchor_total_z);
@@ -263,7 +262,7 @@ module shaft()
 	{
 		cylinder(r=(shaft_dia*shaft_dia_scalar)/2,h=shaft_length);
 		translate([-shaft_dia/3,0,shaft_length/2]) cube([shaft_dia/2,shaft_dia/2,shaft_length],center=true);
-		translate([0,0,stem_socket_depth/2]) rotate([90,0,0]) translate([0,0,-50]) #cylinder(r=spring_peg_r,h=100);
+		translate([0,0,stem_socket_depth/2]) rotate([90,0,0]) translate([0,0,-50]) cylinder(r=spring_peg_r,h=100);
 	}
 }
 
@@ -298,12 +297,13 @@ if (1)
 	
 	rotate([0,test_y,0]) translate([y_total_z/2,+outer_spring_pegs/2,y_pegs_offset]) rotate([0,90,0]) spring_peg_sleeve();
 	rotate([0,test_y,0]) translate([y_total_z/2,-outer_spring_pegs/2,y_pegs_offset]) rotate([0,90,0]) spring_peg_sleeve();
-	translate([0,y_total_y/2+anchor_clearance/2+anchor_total_z/2,0]) rotate([0,270,90]) anchor();
+	translate([0,y_total_y/2+anchor_clearance/2+anchor_total_z/2,0]) rotate([0,270,270]) anchor();
 	translate([0,-(y_total_y/2+anchor_clearance/2+anchor_total_z/2),0]) rotate([0,270,90]) anchor();
-
+	translate([0,-(y_total_y/2+anchor_clearance/2+anchor_total_z/2)-anchor_total_z/2-anchor_clearance/20]) rotate([90,0,0]) y_spring_hat();
 } else {
-	rotate([180,0,0]) base();
-	translate([0,20,0]) rotate([180,0,0]) base();
+	// rotate([180,0,0]) base();
+	// translate([0,20,0]) rotate([180,0,0]) base();
+	anchor();
 	//y_spring_hat();
 	//y_axis();
 	//x_axis();
