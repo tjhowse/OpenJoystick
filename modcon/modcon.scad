@@ -14,12 +14,18 @@ circles_r = [10, 20, 30, 40];
 // Overall width/height
 unit_xy = 100;
 unit_z = 70;
+lid_screw_offset_x = 8;
 
-// groove_cone is used to cut the grooves and holes in the
-// underside of the lid
-module groove_cone() {
-    cylinder(r1=0, r2=10, h=10, $fn=10);
+// grid_screw is an M3x20 cup head bolt by default
+module lid_screw() {
+    head_r = 3;
+    head_z = 3;
+    shaft_r = 1.5;
+    shaft_z = 20;
+    cylinder(r=head_r, h=head_z);
+    translate([0,0,head_z]) cylinder(r=shaft_r, h=shaft_z, $fn=10);
 }
+// lid_screw();
 
 // pd_cylinder is used to cut the pre-drill holes.
 module pd_cylinder() {
@@ -61,7 +67,6 @@ module lid_grid() {
         }
     }
 }
-// lid_grid();
 
 // lid_circles is subtracted from the underside of the lid
 // to make it easier to punch out portions of the lid to mount
@@ -81,14 +86,24 @@ module lid_circles() {
 }
 // lid_circles();
 
-module lid() {
+module lid(grooves = 1) {
     difference() {
         lid_whole();
-        translate([unit_xy/2, unit_xy/2, wt-pd_groove_z]) lid_circles();
-        translate([0, 0, wt-pd_hole_z]) lid_grid();
+        lsox = lid_screw_offset_x;
+        translate([lsox, lsox,0]) lid_screw();
+        translate([unit_xy-lsox, lsox,0]) lid_screw();
+        translate([unit_xy-lsox, unit_xy-lsox,0]) lid_screw();
+        translate([lsox, unit_xy-lsox,0]) lid_screw();
+
+        if (grooves) {
+            translate([unit_xy/2, unit_xy/2, wt-pd_groove_z]) lid_circles();
+            translate([0, 0, wt-pd_hole_z]) lid_grid();
+        }
     }
 }
-render() lid();
+
+lid(1);
+
 module assembled() {
     base();
     translate([0,unit_xy,unit_z])
