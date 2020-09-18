@@ -4,7 +4,7 @@ wt = 5;
 pd_groove_z = 2;
 pd_hole_z = pd_groove_z;
 // Grid spacing for the straight pre-drill grooves
-pd_grid_xy = 5;
+pd_grid_xy = 10;
 // Leave this much room around the edge without pre-drill grooves/holes.
 pd_grid_clearance = 10;
 // A list of radii for the circular pre-drill grooves
@@ -17,6 +17,12 @@ unit_z = 70;
 // underside of the lid
 module groove_cone() {
     cylinder(r1=0, r2=10, h=10, $fn=10);
+}
+
+// pd_cylinder is used to cut the pre-drill holes.
+module pd_cylinder() {
+    pd_r = 1;
+    cylinder(r=pd_r, h=10);
 }
 
 module base() {
@@ -41,7 +47,7 @@ module lid_whole() {
 module lid_grid() {
     for (x = [pd_grid_clearance:pd_grid_xy:unit_xy-pd_grid_clearance]) {
         for (y = [pd_grid_clearance:pd_grid_xy:unit_xy-pd_grid_clearance]) {
-            translate([x, y, 0]) groove_cone();
+            translate([x, y, 0]) pd_cylinder();
         }
     }
 }
@@ -52,6 +58,8 @@ module lid_grid() {
 // stuff.
 module lid_circles() {
     // This should be 100, but it makes my laptop cry.
+    // Consider doing this with two subtracted cylinders
+    // rather than a circle of cones.
     cone_n = 10;
     for (r = circles_r) {
         for (n = [0:cone_n]) {
@@ -64,11 +72,11 @@ module lid_circles() {
 module lid() {
     difference() {
         lid_whole();
-        translate([unit_xy/2, unit_xy/2, wt-pd_groove_z]) lid_circles();
-        lid_grid();
+        // translate([unit_xy/2, unit_xy/2, wt-pd_groove_z]) lid_circles();
+        translate([0, 0, wt-pd_hole_z]) lid_grid();
     }
 }
-render() lid();
+lid();
 module assembled() {
     base();
     translate([0,unit_xy,unit_z])
