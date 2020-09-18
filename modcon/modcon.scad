@@ -25,19 +25,15 @@ module lid_screw() {
     cylinder(r=head_r, h=head_z);
     translate([0,0,head_z]) cylinder(r=shaft_r, h=shaft_z, $fn=10);
 }
-// lid_screw();
 
-// pd_cylinder is used to cut the pre-drill holes.
-module pd_cylinder() {
-    cylinder(r=pd_hole_r, h=10);
-}
-
+// base is the body of the module. Basically everything except the lid.
 module base() {
     difference () {
         cube([unit_xy, unit_xy, unit_z-wt/2]);
         translate([wt, wt, wt]) cube([unit_xy-2*wt, unit_xy-2*wt, unit_z]);
     }
 }
+base();
 
 module lid_whole() {
     union()
@@ -63,7 +59,7 @@ module lid_grid() {
     translate([unit_xy, 0, 0]) rotate([0,0,90]) lid_lines();
     for (x = [pd_grid_clearance:pd_grid_xy:unit_xy-pd_grid_clearance]) {
         for (y = [pd_grid_clearance:pd_grid_xy:unit_xy-pd_grid_clearance]) {
-            translate([x, y, 0]) pd_cylinder();
+            translate([x, y, 0]) cylinder(r=pd_hole_r, h=10);
         }
     }
 }
@@ -84,8 +80,9 @@ module lid_circles() {
         }
     }
 }
-// lid_circles();
 
+// lid is the lid of a module. The grooves argument lets you turn off the grooves for improved
+// rendering speed.
 module lid(grooves = 1) {
     difference() {
         lid_whole();
@@ -102,7 +99,7 @@ module lid(grooves = 1) {
     }
 }
 
-lid(1);
+// lid(0);
 
 module assembled() {
     base();
