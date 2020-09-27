@@ -1,27 +1,28 @@
 // Wall thickness
-wt = 5;
+wt = 3;
 // Pre-drill hole/groove depth
 pd_groove_z = 1;
 pd_groove_x = 1;
-pd_hole_r = 1.5;
+pd_hole_r = 1;
 pd_hole_z = pd_groove_z;
 // Grid spacing for the straight pre-drill grooves
-pd_grid_xy = 10;
+pd_grid_xy = 5;
 // Leave this much room around the edge without pre-drill grooves/holes.
 pd_grid_clearance = 10;
 // A list of radii for the circular pre-drill grooves
 circles_r = [10, 20, 30];
 // Overall width/height
 unit_xy = 80;
-unit_z = 70;
-lid_screw_offset_x = 10;
+unit_z = 50;
+lid_screw_offset_x = wt*2;
 lid_screw_shaft_r = 1.5;
 lid_recess_grace = 0.4; // How much to shink the recessed part of the lid so it sockets into the base.
 
 // grid_screw is an M3x20 cup head bolt by default
 module lid_screw() {
     head_r = 3;
-    head_z = 3;
+    bolt_head_protrusion_z = 3;
+    head_z = 3-bolt_head_protrusion_z;
     shaft_r = lid_screw_shaft_r;
     shaft_z = 20;
     cylinder(r=head_r, h=head_z);
@@ -73,11 +74,11 @@ module lid_lines() {
 // lines to assist with drilling accurately spaced holes or
 // punching out neat sections.
 module lid_grid() {
-    lid_lines();
-    translate([unit_xy, 0, 0]) rotate([0,0,90]) lid_lines();
+    // lid_lines();
+    // translate([unit_xy, 0, 0]) rotate([0,0,90]) lid_lines();
     for (x = [pd_grid_clearance:pd_grid_xy:unit_xy-pd_grid_clearance]) {
         for (y = [pd_grid_clearance:pd_grid_xy:unit_xy-pd_grid_clearance]) {
-            translate([x, y, 0]) cylinder(r=pd_hole_r, h=10);
+            translate([x, y, 0]) cylinder(r=pd_hole_r, h=10, $fn=10);
         }
     }
 }
@@ -125,6 +126,9 @@ module assembled() {
         rotate([180,0,0])
             lid(0);
 }
-lid(1);
-// assembled();
+// lid(1);
+difference() {
+    assembled();
+    translate([unit_xy/2,0,0]) cube([100,100,100]);
+}
 // base();
