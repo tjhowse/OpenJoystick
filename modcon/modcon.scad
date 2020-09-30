@@ -18,15 +18,21 @@ lid_screw_offset_x = wt*2;
 lid_screw_shaft_r = 1.5;
 lid_recess_grace = 0.4; // How much to shink the recessed part of the lid so it sockets into the base.
 
-join_lock_z = wt;
-join_lock_x = 10;
-join_lock_y = wt*4;
+join_lock_z = 2*wt;
+join_lock_x = wt*4;
 
 // join_lock is a H-shaped piece used to lock the modules together.
 module join_lock() {
-    cube([join_lock_x, wt, join_lock_z]);
-    translate([join_lock_x/2-wt/2,wt,0]) cube([wt, wt*2, join_lock_z]);
-    translate([0,wt*3,0]) cube([join_lock_x, wt, join_lock_z]);
+    cube([join_lock_x, wt, join_lock_x]);
+    difference() {
+        translate([join_lock_x/2-wt,wt,0]) cube([wt*2, wt*3, join_lock_x]);
+        translate([wt ,0,0]) {
+            translate([0,-wt/sqrt(2)+wt*3.5,0]) #rotate([0,0,45]) cube([wt, wt, join_lock_x*1.1]);
+        }
+        // translate([wt/2,wt*2,0]) #rotate([0,0,45]) cube([wt*2, wt*2, join_lock_x]);
+    }
+    %cube([30, 3*wt,10]);
+
 }
 
 // join_lock_holes is for chopping the locking holes in the sides of the base
@@ -40,7 +46,7 @@ module join_lock_holes() {
     }
 }
 
-// join_lock();
+join_lock();
 
 // grid_screw is an M3x20 cup head bolt by default
 module lid_screw() {
@@ -156,7 +162,7 @@ module assembled() {
 //     assembled();
 //     translate([unit_xy/2,0,0]) cube([100,100,100]);
 // }
-intersection() {
-    base();
-    translate([0,0,17.5]) cube([unit_xy, unit_xy,join_lock_x*1.5]);
-}
+// intersection() {
+//     base();
+//     translate([0,0,17.5]) cube([unit_xy, unit_xy,join_lock_x*1.5]);
+// }
