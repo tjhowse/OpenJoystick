@@ -29,7 +29,18 @@ module join_lock() {
     translate([0,wt*3,0]) cube([join_lock_x, wt, join_lock_z]);
 }
 
-join_lock();
+// join_lock_holes is for chopping the locking holes in the sides of the base
+module join_lock_holes() {
+    ratio = 4;
+    translate([unit_xy/ratio,0,0]) cube([join_lock_z, 200, join_lock_x], center=true);
+    translate([-unit_xy/ratio,0,0]) cube([join_lock_z, 200, join_lock_x], center=true);
+    rotate([0,0,90]) {
+        translate([unit_xy/ratio,0,0]) cube([join_lock_z, 200, join_lock_x], center=true);
+        translate([-unit_xy/ratio,0,0]) cube([join_lock_z, 200, join_lock_x], center=true);
+    }
+}
+
+// join_lock();
 
 // grid_screw is an M3x20 cup head bolt by default
 module lid_screw() {
@@ -66,6 +77,7 @@ module base() {
     difference () {
         cube([unit_xy, unit_xy, unit_z-wt/2]);
         translate([wt, wt, wt]) cube([unit_xy-2*wt, unit_xy-2*wt, unit_z]);
+        translate([unit_xy/2, unit_xy/2, unit_z/2]) join_lock_holes();
     }
     base_screw_posts();
 }
@@ -144,4 +156,7 @@ module assembled() {
 //     assembled();
 //     translate([unit_xy/2,0,0]) cube([100,100,100]);
 // }
-// base();
+intersection() {
+    base();
+    translate([0,0,17.5]) cube([unit_xy, unit_xy,join_lock_x*1.5]);
+}
