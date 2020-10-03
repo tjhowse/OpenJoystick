@@ -48,6 +48,17 @@ module pin_barb() {
     }
 }
 
+// spring_pin is a variant on the join_pin that uses a barbed spring arrangement
+// rather than the two-piece version.
+module spring_pin() {
+    cube([join_pin_x+2*wt, wt, join_pin_z]);
+    translate([wt,wt,0]) cube([join_pin_x/3, wt*3, join_pin_z]);
+    translate([3*wt,wt,0]) cube([join_pin_x/3, wt*3, join_pin_z]);
+    translate([0,3*wt,0]) rotate([0,0,0]) #pin_barb();
+    translate([4*wt,4*wt,0]) rotate([0,0,270]) #pin_barb();
+}
+spring_pin();
+
 // join_pin_holes is for chopping the locking holes in the sides of the base
 module join_pin_holes() {
     ratio = 4;
@@ -167,7 +178,10 @@ module assembled() {
         rotate([180,0,0])
             lid(0);
 }
-base();
+// join_pin_clip();
+// translate([20,0,0]) join_pin();
+
+// base();
 // lid(1);
 // difference() {
 //     assembled();
