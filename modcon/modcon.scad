@@ -18,35 +18,46 @@ lid_screw_offset_x = wt*2;
 lid_screw_shaft_r = 1.5;
 lid_recess_grace = 0.4; // How much to shink the recessed part of the lid so it sockets into the base.
 
-join_lock_z = 2*wt;
-join_lock_x = wt*4;
+join_pin_x = 3*wt;
+join_pin_z = join_pin_x;
 
-// join_lock is a H-shaped piece used to lock the modules together.
-module join_lock() {
-    cube([join_lock_x, wt, join_lock_x]);
-    difference() {
-        translate([join_lock_x/2-wt,wt,0]) cube([wt*2, wt*3, join_lock_x]);
-        translate([wt ,0,0]) {
-            translate([0,-wt/sqrt(2)+wt*3.5,0]) #rotate([0,0,45]) cube([wt, wt, join_lock_x*1.1]);
-        }
-        // translate([wt/2,wt*2,0]) #rotate([0,0,45]) cube([wt*2, wt*2, join_lock_x]);
-    }
-    %cube([30, 3*wt,10]);
+// join_pin goes through the holes in the sides of the bases to lock them together.
+module join_pin() {
+    cube([join_pin_x+2*wt, wt, join_pin_z]);
+    translate([wt,wt,0]) cube([join_pin_x, 2*wt, join_pin_z]);
+    translate([wt*2,wt*3,0]) cube([wt, wt, join_pin_z]);
+    translate([wt*2, wt*3,0]) rotate([0,0,90]) pin_barb();
+    translate([wt*4, wt*4,0]) rotate([0,0,180]) pin_barb();
 
 }
 
-// join_lock_holes is for chopping the locking holes in the sides of the base
-module join_lock_holes() {
+// join_pin_clip latches over the end of the join_pin to lock it into place
+module join_pin_clip() {
+    clip_scale = 1.1;
+    scale([clip_scale, clip_scale, 1]) difference(){
+        cube([join_pin_x+2*wt, 2*wt, join_pin_z]);
+        translate([join_pin_x+2*wt, wt*5,0]) rotate([0,0,180]) join_pin();
+    }
+}
+
+// pin_barb is a part of the join_pin
+module pin_barb() {
+    translate([wt/2, wt/2, join_pin_z/2]) difference() {
+        cube([wt, wt, join_pin_z], center=true);
+        rotate([0,0,45]) translate([-50,0,-join_pin_z/2]) cube([100,10,join_pin_z]);
+    }
+}
+
+// join_pin_holes is for chopping the locking holes in the sides of the base
+module join_pin_holes() {
     ratio = 4;
-    translate([unit_xy/ratio,0,0]) cube([join_lock_z, 200, join_lock_x], center=true);
-    translate([-unit_xy/ratio,0,0]) cube([join_lock_z, 200, join_lock_x], center=true);
+    translate([unit_xy/ratio,0,0]) cube([join_pin_z, 200, join_pin_x], center=true);
+    translate([-unit_xy/ratio,0,0]) cube([join_pin_z, 200, join_pin_x], center=true);
     rotate([0,0,90]) {
-        translate([unit_xy/ratio,0,0]) cube([join_lock_z, 200, join_lock_x], center=true);
-        translate([-unit_xy/ratio,0,0]) cube([join_lock_z, 200, join_lock_x], center=true);
+        translate([unit_xy/ratio,0,0]) cube([join_pin_z, 200, join_pin_x], center=true);
+        translate([-unit_xy/ratio,0,0]) cube([join_pin_z, 200, join_pin_x], center=true);
     }
 }
-
-join_lock();
 
 // grid_screw is an M3x20 cup head bolt by default
 module lid_screw() {
@@ -59,6 +70,7 @@ module lid_screw() {
     translate([0,0,head_z]) cylinder(r=shaft_r, h=shaft_z, $fn=10);
 }
 
+// base_screw_post is one of the corner screw posts for the base.
 module base_screw_post() {
     difference() {
         cylinder(r=lid_screw_shaft_r+wt, h=unit_z-wt*2);
@@ -66,6 +78,9 @@ module base_screw_post() {
     }
 }
 
+// base_screw_posts are the four posts in the corners inside the
+// base. These posts provide the holes for screws that hold the lid
+// on, and also add rigidity to the base by reinforcing the corners.
 module base_screw_posts() {
     intersection() {
         cube([unit_xy, unit_xy, unit_z-wt/2]);
@@ -77,13 +92,13 @@ module base_screw_posts() {
         }
     }
 }
-// base_screw_posts();
+
 // base is the body of the module. Basically everything except the lid.
 module base() {
     difference () {
         cube([unit_xy, unit_xy, unit_z-wt/2]);
         translate([wt, wt, wt]) cube([unit_xy-2*wt, unit_xy-2*wt, unit_z]);
-        translate([unit_xy/2, unit_xy/2, unit_z/2]) join_lock_holes();
+        translate([unit_xy/2, unit_xy/2, unit_z/2]) join_pin_holes();
     }
     base_screw_posts();
 }
@@ -103,7 +118,7 @@ module lid_lines() {
 
 // lid_grid is subtracted from the lid to provide the grid
 // lines to assist with drilling accurately spaced holes or
-// punching out neat sections.
+// punching out neat sections. Currently unused.
 module lid_grid() {
     // lid_lines();
     // translate([unit_xy, 0, 0]) rotate([0,0,90]) lid_lines();
@@ -118,11 +133,6 @@ module lid_grid() {
 // to make it easier to punch out portions of the lid to mount
 // stuff.
 module lid_circles() {
-    // This should be 100, but it makes my laptop cry.
-    // Consider doing this with two subtracted cylinders
-    // rather than a circle of cones.
-    cone_n = 10;
-
     for (r = circles_r) {
         difference() {
             cylinder(r=r+pd_groove_x/2, h=10);
@@ -157,6 +167,7 @@ module assembled() {
         rotate([180,0,0])
             lid(0);
 }
+base();
 // lid(1);
 // difference() {
 //     assembled();
@@ -164,5 +175,5 @@ module assembled() {
 // }
 // intersection() {
 //     base();
-//     translate([0,0,17.5]) cube([unit_xy, unit_xy,join_lock_x*1.5]);
+//     translate([0,0,17.5]) cube([unit_xy, unit_xy,join_pin_x*1.5]);
 // }
