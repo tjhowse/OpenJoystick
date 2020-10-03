@@ -52,8 +52,8 @@ module pin_barb() {
 // rather than the two-piece version.
 module spring_pin() {
     cube([join_pin_x+2*wt, wt, join_pin_z]);
-    translate([wt,wt,0]) cube([join_pin_x/3, wt*3, join_pin_z]);
-    translate([3*wt,wt,0]) cube([join_pin_x/3, wt*3, join_pin_z]);
+    translate([wt,wt,0]) cube([wt/2, wt*3, join_pin_z]);
+    translate([3.5*wt,wt,0]) cube([wt/2, wt*3, join_pin_z]);
     translate([0,3*wt,0]) rotate([0,0,0]) #pin_barb();
     translate([4*wt,4*wt,0]) rotate([0,0,270]) #pin_barb();
 }
