@@ -57,7 +57,7 @@ module spring_pin() {
     translate([0,3*wt,0]) rotate([0,0,0]) #pin_barb();
     translate([4*wt,4*wt,0]) rotate([0,0,270]) #pin_barb();
 }
-spring_pin();
+// spring_pin();
 
 // join_pin_holes is for chopping the locking holes in the sides of the base
 module join_pin_holes() {
@@ -181,7 +181,7 @@ module assembled() {
 // join_pin_clip();
 // translate([20,0,0]) join_pin();
 
-// base();
+base();
 // lid(1);
 // difference() {
 //     assembled();
