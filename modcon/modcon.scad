@@ -170,6 +170,26 @@ module lid(grooves = 1) {
     }
 }
 
+// lid_HW997 is a variant of the lid with the holes to mount the HW0000997 joystick
+// already formed.
+module lid_HW997(grooves = 1) {
+    $fn=20;
+    HD997_hole_r = 41/2;
+    HD997_screw_spacing_xy = 32.5/2;
+    HD997_screw_hole_r = 2.5/2;
+    difference() {
+        lid(0);
+        translate([unit_xy/2, unit_xy/2,0]) {
+            cylinder(r=HD997_hole_r, h=100);
+            translate([HD997_screw_spacing_xy,HD997_screw_spacing_xy,0]) cylinder(r=HD997_screw_hole_r, h=100);
+            translate([-HD997_screw_spacing_xy,HD997_screw_spacing_xy,0]) cylinder(r=HD997_screw_hole_r, h=100);
+            translate([HD997_screw_spacing_xy,-HD997_screw_spacing_xy,0]) cylinder(r=HD997_screw_hole_r, h=100);
+            translate([-HD997_screw_spacing_xy,-HD997_screw_spacing_xy,0]) cylinder(r=HD997_screw_hole_r, h=100);
+        }
+
+    }
+}
+
 // lid(1);
 
 module assembled() {
@@ -181,8 +201,9 @@ module assembled() {
 // join_pin_clip();
 // translate([20,0,0]) join_pin();
 
-base();
-// lid(1);
+// base();
+lid(1);
+// lid_HW997(0);
 // difference() {
 //     assembled();
 //     translate([unit_xy/2,0,0]) cube([100,100,100]);
