@@ -3,11 +3,11 @@
 
 // These are the addresses in EEPROM for each setting.
 // The schema is used to avoid
-#DEFINE SCHEMA_A 0
-#DEFINE SCHEMA 0x5A
-#DEFINE ADDR_A 1
-#DEFINE GUEST_COUNT_A 2
-#DEFINE GUEST_ADDRS_A 1024
+#define SCHEMA_A 0
+#define SCHEMA 0x5A
+#define ADDR_A 1
+#define GUEST_COUNT_A 2
+#define GUEST_ADDRS_A 1024
 
 class Settings {
     public:
@@ -18,7 +18,7 @@ class Settings {
         // How many guest modules do we know about?
         uint8_t guest_count;
         // This stores the addresses of the guest modules we know about.
-        uint8_t guest_addrs[];
+        uint8_t* guest_addrs;
 
     void load() {
         // Load the settings from EEPROM into this class.
@@ -43,4 +43,4 @@ class Settings {
     void save() {
         // Save the settings from this class into EEPROM.
     }
-}
+};

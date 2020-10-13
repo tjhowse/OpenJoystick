@@ -7,18 +7,18 @@
 #include "settings.h"
 
 
-#DEFINE BTN_COUNT 32
+#define BTN_COUNT 32
 // Also think about the two dpads. They're essentially another 16 buttons in total.
 // I'm not sure if there's any way of detecting a dpad-style sequence of inputs from
 // a connected input device. I think we might just have to treat them as digital
 // inputs.
-#DEFINE DPAD_BTN_COUNT 16
-#DEFINE AXIS_COUNT 6
+#define DPAD_BTN_COUNT 16
+#define AXIS_COUNT 6
 
-#DEFINE MODE_NORMAL 0
-#DEFINE MODE_LEARN 1
+#define MODE_NORMAL 0
+#define MODE_LEARN 1
 
-#DEFINE PIN_BTN_MODE 2
+#define PIN_BTN_MODE 2
 
 bool is_host = false; // This is true if USB is connected to this module, making it the host.
 uint8_t mode = MODE_NORMAL;
@@ -36,23 +36,24 @@ void update_inputs_remote() {
 void update_HID() {
   // This updates the gamepad object with all available local and remote inputs
   Gamepad.releaseAll();
-  Gamepad.press(count);
+  // Gamepad.press(count);
 
   // Move x/y Axis to a new position (16bit)
-  Gamepad.xAxis(random(0xFFFF));
-  Gamepad.yAxis(random(0xFFFF));
+  Gamepad.xAxis(analogRead(A0));
+  Gamepad.yAxis(analogRead(A1));
+  // Gamepad.yAxis(random(0xFFFF));
 
   // Go through all dPad positions
   // values: 0-8 (0==centered)
-  static uint8_t dpad1 = GAMEPAD_DPAD_CENTERED;
-  Gamepad.dPad1(dpad1++);
-  if (dpad1 > GAMEPAD_DPAD_UP_LEFT)
-    dpad1 = GAMEPAD_DPAD_CENTERED;
+  // static uint8_t dpad1 = GAMEPAD_DPAD_CENTERED;
+  // Gamepad.dPad1(dpad1++);
+  // if (dpad1 > GAMEPAD_DPAD_UP_LEFT)
+  //   dpad1 = GAMEPAD_DPAD_CENTERED;
 
-  static int8_t dpad2 = GAMEPAD_DPAD_CENTERED;
-  Gamepad.dPad2(dpad2--);
-  if (dpad2 < GAMEPAD_DPAD_CENTERED)
-    dpad2 = GAMEPAD_DPAD_UP_LEFT;
+  // static int8_t dpad2 = GAMEPAD_DPAD_CENTERED;
+  // Gamepad.dPad2(dpad2--);
+  // if (dpad2 < GAMEPAD_DPAD_CENTERED)
+  //   dpad2 = GAMEPAD_DPAD_UP_LEFT;
 
   // Functions above only set the values.
   // This writes the report to the host.
@@ -60,25 +61,27 @@ void update_HID() {
 }
 
 void update_mode() {
-  if (!digitalRead(pinButton)) {
+  if (!digitalRead(PIN_BTN_MODE)) {
     mode = MODE_LEARN;
   }
 }
 
-
 void setup_pins() {
   pinMode(PIN_BTN_MODE, INPUT_PULLUP);
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
 }
 
 void setup() {
   // Detect whether USB is connected to this module.
   setup_pins();
-  settings.load();
+  // settings.load();
   is_host = UDADDR & _BV(ADDEN);
   if (is_host) {
-
     Wire.begin();
     Gamepad.begin();
+    Serial.begin(115200);
+    Serial.println("HI!");
   } else {
     // This is a guest module.
   }
@@ -95,7 +98,7 @@ void loop() {
       update_HID();
     }
   } else if (mode == MODE_LEARN) {
-
+    Serial.println("In learn mode");
   }
   delay(10);
 }
