@@ -18,7 +18,11 @@
 #define MODE_NORMAL 0
 #define MODE_LEARN 1
 
+#define GUEST_LEARN_MODE_BLINK_INTERVAL_MS 100
+#define HOST_LEARN_MODE_BLINK_INTERVAL_MS 100
+
 #define PIN_BTN_MODE 10
+#define PIN_RXLED 16
 
 bool is_host = false; // This is true if USB is connected to this module, making it the host.
 uint8_t mode = MODE_NORMAL;
@@ -70,13 +74,15 @@ void update_mode() {
 }
 
 void learn_guest_i2c_callback(int byte_count) {
+  if (mode != MODE_LEARN) return;
   uint8_t addr = Wire.read();
   if (addr > 0x01) {
     settings.addr = addr;
     settings.save();
     Wire.end();
     Wire.begin(settings.addr);
-    Wire.onRequest(nullptr);
+    Wire.write(0x01);
+    mode = MODE_NORMAL;
   }
 }
 
@@ -87,8 +93,9 @@ void setup_learn_mode() {
   } else {
     settings.addr = 0x01;
     settings.save();
-    Wire.begin(settings.addr);
+    Wire.end();
     Wire.onRequest(learn_guest_i2c_callback);
+    Wire.begin(settings.addr);
   }
 }
 
@@ -131,26 +138,47 @@ void loop_normal() {
 
 void loop_learn() {
   if (is_host) {
-    Serial.println("In learn mode");
     // Attempt to assign 0x01 a unique address.
     Wire.beginTransmission(0x01);
     Wire.write(assigned_address);
-    Serial.print("Writing address:");
-    Serial.print(assigned_address);
+    Serial.print("Writing address: ");
+    Serial.println(assigned_address);
     Wire.endTransmission();
 
-    Wire.requestFrom(assigned_address, (uint8_t)1);
-    while (Wire.available()) {
-      Serial.print(Wire.read());
-    }
+    // Wire.requestFrom(assigned_address, (uint8_t)1);
+    // while (Wire.available()) {
+    //   Serial.print(Wire.read());
+    // }
+    Serial.println("Address assigned!");
   } else {
 
   }
 }
 
-void loop() {
-  update_mode();
+uint16_t last_blink_ms = 0;
+bool blink_prev;
 
+void loop_leds() {
+  if (mode == MODE_NORMAL) {
+  // if (is_host) {
+    digitalWrite(PIN_RXLED, LOW);
+  } else {
+    if ((millis() - last_blink_ms) > (is_host ? HOST_LEARN_MODE_BLINK_INTERVAL_MS : GUEST_LEARN_MODE_BLINK_INTERVAL_MS)) {
+      blink_prev = !blink_prev;
+      last_blink_ms = millis();
+      if (blink_prev) {
+        digitalWrite(PIN_RXLED, LOW);
+      } else {
+        digitalWrite(PIN_RXLED, HIGH);
+      }
+    }
+  }
+}
+
+void loop() {
+  is_host = UDADDR & _BV(ADDEN);
+  update_mode();
+  loop_leds();
   if (mode == MODE_NORMAL) {
     loop_normal();
   } else if (mode == MODE_LEARN) {
