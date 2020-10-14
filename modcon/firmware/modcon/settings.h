@@ -20,7 +20,7 @@ class Settings {
         // This stores the addresses of the guest modules we know about.
         uint8_t* guest_addrs;
 
-    void load() {
+    bool load() {
         // Load the settings from EEPROM into this class.
         // Host module:
         // - Guest I2C module I2C addresses,
@@ -30,17 +30,20 @@ class Settings {
         // - GPIO to Input associations.
         if (SCHEMA != EEPROM.read(SCHEMA_A)) {
             // We don't recognise this EEPROM schema, or it's corrupt. Abandon ship!
-            return;
+            return false;
         }
         addr = EEPROM.read(ADDR_A);
-        guest_count = EEPROM.read(GUEST_COUNT_A);
-        guest_addrs = new uint8_t [guest_count];
-        for (uint8_t i = 0; i < guest_count; i++) {
-            guest_addrs[i] = EEPROM.read(GUEST_ADDRS_A+i);
-        }
+        // guest_count = EEPROM.read(GUEST_COUNT_A);
+        // guest_addrs = new uint8_t [guest_count];
+        // for (uint8_t i = 0; i < guest_count; i++) {
+        //     guest_addrs[i] = EEPROM.read(GUEST_ADDRS_A+i);
+        // }
         valid = true;
+        return true;
     }
     void save() {
         // Save the settings from this class into EEPROM.
+        EEPROM.write(ADDR_A, addr);
+        EEPROM.write(SCHEMA_A, SCHEMA);
     }
 };
