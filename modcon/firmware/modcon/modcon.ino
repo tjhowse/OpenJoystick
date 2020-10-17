@@ -108,6 +108,7 @@ void setup_pins() {
 void setup() {
   setup_pins();
   settings.load();
+  // Note this isn't accurate right at startup. It take a while
   is_host = UDADDR & _BV(ADDEN);
   if (is_host) {
     settings.addr = 0x00;
