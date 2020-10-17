@@ -90,16 +90,21 @@ void learn_guest_i2c_callback(int byte_count) {
     Wire.begin(settings.addr);
     Serial.print("Guest assigned address ");
     Serial.println(settings.addr);
-    Wire.onReceive(normal_guest_i2c_callback);
+    Wire.onReceive(normal_guest_i2c_receive);
+    Wire.onRequest(normal_guest_i2c_request);
   }
 }
 
-void normal_guest_i2c_callback(int byte_count) {
-  Serial.println("normal_guest_i2c_callback");
-  Wire.write(settings.addr);
-  Wire.write(0x5A);
-  Serial.print("Guest got a read request ");
+void normal_guest_i2c_receive(int byte_count) {
+  if (mode != MODE_NORMAL) return;
+  Serial.println("normal_guest_i2c_receive");
   Serial.println(byte_count);
+}
+
+void normal_guest_i2c_request() {
+  if (mode != MODE_NORMAL) return;
+  Serial.println("normal_guest_i2c_request");
+  Wire.write(settings.addr);
 }
 
 void setup_learn_mode() {
@@ -185,7 +190,14 @@ void loop_learn() {
     Wire.beginTransmission(assigned_address);
     uint8_t error = Wire.endTransmission();
     if (!error) {
-      Serial.println(" Host assigned an address.");
+      Serial.print("Host assigned an address: ");
+      Wire.requestFrom(assigned_address, 1);
+      while (Wire.available()) { // slave may send less than requested
+        Serial.print("Holy shit! ");
+        uint8_t c = Wire.read(); // receive a byte as character
+        Serial.print(c);         // print the character
+      }
+      // Serial.println(assigned_address);
     }
     mode = MODE_NORMAL;
   } else {
