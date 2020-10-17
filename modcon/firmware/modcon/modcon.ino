@@ -18,14 +18,19 @@
 #define MODE_NORMAL 0
 #define MODE_LEARN 1
 
+// Wait this many MS before determining whether we're a guest or host module.
+#define STARTUP_DELAY_MS 1000
 #define GUEST_LEARN_MODE_BLINK_INTERVAL_MS 100
-#define HOST_LEARN_MODE_BLINK_INTERVAL_MS 100
+#define HOST_LEARN_MODE_BLINK_INTERVAL_MS 1000
 
 #define PIN_BTN_MODE 10
-#define PIN_RXLED 16
+#define PIN_RXLED 17
+#define PIN_HOST 9
 
-bool is_host = false; // This is true if USB is connected to this module, making it the host.
-uint8_t mode = MODE_NORMAL;
+#define LEARNING_I2C_ADDRESS 0x01
+
+bool is_host = false;
+volatile uint8_t mode = MODE_NORMAL;
 Settings settings;
 uint8_t assigned_address = 2;
 
@@ -74,58 +79,86 @@ void update_mode() {
 }
 
 void learn_guest_i2c_callback(int byte_count) {
+  Serial.println("learn_guest_i2c_callback");
   if (mode != MODE_LEARN) return;
   uint8_t addr = Wire.read();
   if (addr > 0x01) {
+    mode = MODE_NORMAL;
     settings.addr = addr;
     settings.save();
-    Wire.end();
+    // Wire.end();
     Wire.begin(settings.addr);
-    Wire.write(0x01);
-    mode = MODE_NORMAL;
+    Serial.print("Guest assigned address ");
+    Serial.println(settings.addr);
+    Wire.onReceive(normal_guest_i2c_callback);
   }
+}
+
+void normal_guest_i2c_callback(int byte_count) {
+  Serial.println("normal_guest_i2c_callback");
+  Wire.write(settings.addr);
+  Wire.write(0x5A);
+  Serial.print("Guest got a read request ");
+  Serial.println(byte_count);
 }
 
 void setup_learn_mode() {
   mode = MODE_LEARN;
   if (is_host) {
     settings.guest_count = 0;
+    Serial.println("Host in learn mode");
   } else {
-    settings.addr = 0x01;
+    Serial.println("Guest in learn mode");
+    settings.addr = LEARNING_I2C_ADDRESS;
     settings.save();
-    Wire.end();
-    Wire.onRequest(learn_guest_i2c_callback);
+    // Wire.end();
     Wire.begin(settings.addr);
+    Wire.onReceive(learn_guest_i2c_callback);
+    Serial.println("Guest registered callback");
+    TXLED1;
   }
 }
 
 void setup_pins() {
   pinMode(PIN_BTN_MODE, INPUT_PULLUP);
+  pinMode(PIN_HOST, INPUT_PULLUP);
+  pinMode(PIN_RXLED, OUTPUT);
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
 }
 
+bool check_if_host() {
+  // This function returns true if this module is the host, otherwise false.
+  // delay(STARTUP_DELAY_MS)
+  // // Note this must be read after a delay, it's not accurate on boot.
+  // return UDADDR & _BV(ADDEN);
+  // For testing I'm using a GPIO pin to set a module to guest/host rather
+  // than auto-detecting based on USB state.
+  return digitalRead(PIN_HOST);
+}
+
 void setup() {
   setup_pins();
+  is_host = check_if_host();
   settings.load();
-  // Note this isn't accurate right at startup. It take a while
-  is_host = UDADDR & _BV(ADDEN);
+  Serial.begin(115200);
+  delay(1000);
   if (is_host) {
+    Serial.println("Hi from host");
     settings.addr = 0x00;
     settings.save();
     Wire.begin();
-    Gamepad.begin();
+    // Gamepad.begin();
     // Gamepad1.begin();
     // Gamepad2.begin();
-    Serial.begin(115200);
-    Serial.println("HI!");
   } else {
     // This is a guest module.
+    Serial.println("Hi from guest");
     if (!settings.valid) {
-      settings.addr = 0xFF;
+      settings.addr = 0x70;
       settings.save();
-      Wire.begin(settings.addr);
     }
+    Wire.begin(settings.addr);
   }
 }
 
@@ -133,30 +166,34 @@ void loop_normal() {
   update_inputs_local();
   if (is_host) {
     update_inputs_remote();
-    update_HID();
+    // update_HID();
   }
 }
 
 void loop_learn() {
   if (is_host) {
     // Attempt to assign 0x01 a unique address.
-    Wire.beginTransmission(0x01);
-    Wire.write(assigned_address);
+    Wire.beginTransmission(LEARNING_I2C_ADDRESS);
+    Serial.println("Host sent an address");
+    int i = Wire.write(assigned_address);
     Serial.print("Writing address: ");
-    Serial.println(assigned_address);
+    Serial.print(assigned_address);
+    Serial.print(" : ");
+    Serial.println(i);
     Wire.endTransmission();
-
-    // Wire.requestFrom(assigned_address, (uint8_t)1);
-    // while (Wire.available()) {
-    //   Serial.print(Wire.read());
-    // }
-    Serial.println("Address assigned!");
+    delay(1000);
+    Wire.beginTransmission(assigned_address);
+    uint8_t error = Wire.endTransmission();
+    if (!error) {
+      Serial.println(" Host assigned an address.");
+    }
+    mode = MODE_NORMAL;
   } else {
 
   }
 }
 
-uint16_t last_blink_ms = 0;
+uint32_t last_blink_ms = 0;
 bool blink_prev;
 
 void loop_leds() {
@@ -177,7 +214,6 @@ void loop_leds() {
 }
 
 void loop() {
-  is_host = UDADDR & _BV(ADDEN);
   update_mode();
   loop_leds();
   if (mode == MODE_NORMAL) {
