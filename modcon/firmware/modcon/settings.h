@@ -38,12 +38,12 @@ class Settings {
         // for (uint8_t i = 0; i < guest_count; i++) {
         //     guest_addrs[i] = EEPROM.read(GUEST_ADDRS_A+i);
         // }
-        valid = true;
+        // valid = true;
         return true;
     }
     void save() {
         // Save the settings from this class into EEPROM.
-        EEPROM.write(ADDR_A, addr);
-        EEPROM.write(SCHEMA_A, SCHEMA);
+        // EEPROM.write(ADDR_A, addr);
+        // EEPROM.write(SCHEMA_A, SCHEMA);
     }
 };
