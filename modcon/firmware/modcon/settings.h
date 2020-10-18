@@ -1,6 +1,5 @@
 #include <EEPROM.h>
 
-
 // These are the addresses in EEPROM for each setting.
 // The schema is used to avoid
 #define SCHEMA_A 0
