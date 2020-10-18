@@ -69,7 +69,9 @@ void setup() {
 void loop_normal() {
     update_inputs_local();
     if (is_host) {
-        update_inputs_remote();
+        loop_host();
+    } else {
+        loop_guest();
     }
 }
 

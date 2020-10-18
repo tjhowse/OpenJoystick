@@ -48,3 +48,6 @@ void setup_guest() {
     }
     Wire.begin(settings.addr);
 }
+
+void loop_guest() {
+}
