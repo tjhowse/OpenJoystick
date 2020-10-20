@@ -17,9 +17,9 @@ void update_inputs_local() {
     for (i = 0; i < INPUT_PIN_COUNT; i++) {
         if (settings.input_pin_type & (0x0001<<i)) {
             // Read an analogue value
-            local_analogue_values[a_count++] = analogRead(input_pins[i]);
+            local_analog_values[a_count++] = analogRead(input_pins[i]);
             if (is_host) {
-                handle_analog_value(local_analogue_values[a_count-1]);
+                handle_analog_value(local_analog_values[a_count-1]);
             }
         } else {
             // Read a digital value
@@ -55,12 +55,15 @@ void learn_inputs() {
             settings.input_pin_type |= (0x0001<<i);
             if (i == 8) Serial.println(temp);
         }
+        // This should also somehow detect a digital input...
     }
 }
 
 void setup_learn_mode() {
     mode = MODE_LEARN;
     settings.input_pin_type = 0x0000;
+    settings.local_a_input_count = 0;
+    settings.local_d_input_count = 0;
     if (is_host) {
         setup_learn_mode_host();
     } else {
@@ -70,12 +73,15 @@ void setup_learn_mode() {
 
 void teardown_learn_mode() {
     mode = MODE_NORMAL;
-    settings.save();
     Serial.println("Leaving learn mode");
     for (i = 0; i < INPUT_PIN_COUNT; i++) {
+        if ((settings.input_pin_type & (0x0001<<i))) {
+            settings.local_a_input_count++;
+        }
         Serial.print((settings.input_pin_type & (0x0001<<i))>>i);
         Serial.print(" ");
     }
+    settings.save();
     Serial.println();
 }
 

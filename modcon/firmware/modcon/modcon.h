@@ -28,7 +28,7 @@ uint8_t input_pins[] = {A0, A1, A2, A3, A6, A7, A8, A9};
 uint8_t i, j;
 // The ADCs on the atmel32u4 are 10-bit, so allocate 16 bits per input.
 // If this ever gets bigger than 32B we can't put it through I2C in one message.
-uint16_t local_analogue_values[INPUT_PIN_COUNT];
+uint16_t local_analog_values[INPUT_PIN_COUNT];
 // TODO OPTIMISATION if we run out of ram this is shockingly inefficient
 uint16_t local_digital_values[INPUT_PIN_COUNT];
 
@@ -61,6 +61,8 @@ class Settings {
         uint8_t* guest_addrs;
         // A bitmask that stores whether a pin is analogue (0) or digital (1)
         uint16_t input_pin_type;
+        uint8_t local_a_input_count;
+        uint8_t local_d_input_count;
 
     bool load() {
         // Load the settings from EEPROM into this class.

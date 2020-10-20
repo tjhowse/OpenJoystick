@@ -64,18 +64,35 @@ void setup_learn_mode_host() {
 void update_inputs_remote() {
     // This is called if this module is the host module. It polls all the guest modules
     // for their present input states.
+    uint16_t buffer;
+    uint8_t nibble = 0;
     for (i = I2C_ADDRESS_ALLOCATION_START; i < next_i2c_address; i++) {
         Wire.requestFrom((uint8_t)i, (uint8_t)(INPUT_PIN_COUNT*2));
-        j = 0;
+        buffer = 0;
         while (Wire.available()) {
-            // This shenannigans here is because we're reading bytewise from
-            // Wire.read but storing values into two-byte registers.
-            // ((uint8_t*)remote_input_values)[j++] = Wire.read();
-            Wire.read();
+            // We should be reading pairs of bytes.
+            if (nibble == 0) {
+                // First half
+                // TODO Still something funky here.
+                buffer |= Wire.read()<<8;
+                // Serial.print("First half: ");
+                // Serial.println(buffer);
+                nibble++;
+            } else {
+                // Second half
+                buffer |= Wire.read();
+                // Serial.print("twost half: ");
+                // Serial.println(buffer);
+                if (!(buffer & 0x10)) {
+                    // This is an analogue value
+                    handle_analog_value(buffer);
+                } else {
+                    // This contains digital values
+                }
+                buffer = 0;
+                nibble = 0;
+            }
         }
-        Serial.print("A0 on remote: ");
-        Serial.println(remote_input_values[0]);
-        Serial.println(remote_input_values[0]+remote_input_values[1]<<8);
     }
 }
 
