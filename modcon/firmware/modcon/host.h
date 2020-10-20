@@ -2,7 +2,7 @@
 
 // If an analog input reads further than this value from min or max
 // then it's deemed to be an analogue input.
-#define ANALOG_DETECTION_BOUNDARY 20
+#define ANALOG_DETECTION_BOUNDARY 50
 #define ANALOG_PIN_MAX 1023
 #define ANALOG_PIN_MIN 0
 
@@ -15,41 +15,31 @@
 #define AXIS_COUNT 4
 
 uint8_t next_i2c_address = I2C_ADDRESS_ALLOCATION_START;
-uint16_t remote_input_values[INPUT_PIN_COUNT];
 
-// This maps from the memory holding the axis value, usually in
-// either local_input_values[] or remote_input_values[], to the
-// axes used to drive the HID joysticks.
-uint8_t mapped_axis_count = 0;
-uint16_t *axis_map[GAMEPAD_COUNT*AXIS_COUNT];
-
-// These are same as the above, but map those fields through to binary buttons.
-// One bit per button.
-uint8_t mapped_btn_count = 0;
-uint32_t *btn_map[GAMEPAD_COUNT];
-
-// One element in this array per local or remote input values array,
-// boolean mapping 0 - digital, 1 - analog
-uint16_t axis_allocation[module_count???]
+uint8_t mapped_a_count = 0;
+uint8_t mapped_d_count = 0;
 
 void loop_learn_host() {
+    uint8_t error;
     // Attempt to assign 0x01 a unique address.
     Wire.beginTransmission(LEARNING_I2C_ADDRESS);
-    Serial.println("Host sent an address");
+    Serial.println("Host sent an addresssssssssssss");
     int i = Wire.write(next_i2c_address);
     Serial.print("Writing address: ");
     Serial.print(next_i2c_address);
     Serial.print(" : ");
     Serial.println(i);
-    Wire.endTransmission();
-    delay(1000);
-    Wire.beginTransmission(next_i2c_address);
-    uint8_t error = Wire.endTransmission();
+    error = Wire.endTransmission();
     if (!error) {
-        Serial.print("Host assigned an address: ");
-        Serial.println(next_i2c_address++);
-        mode = MODE_NORMAL;
-        // TODO MVP allocate local storage for remote values in RAM.
+        // We got a response from a guest in learn mode.
+        // Attempt to connect to it at its assigned address.
+        delay(500);
+        Wire.beginTransmission(next_i2c_address);
+        error = Wire.endTransmission();
+        if (!error) {
+            Serial.print("Host assigned an address: ");
+            Serial.println(next_i2c_address++);
+        }
     }
 }
 
@@ -58,7 +48,10 @@ void setup_host() {
     settings.addr = 0x00;
     settings.save();
     Wire.begin();
-    // Gamepad.begin();
+    Gamepad1.begin();
+    Gamepad2.begin();
+    Gamepad3.begin();
+    Gamepad4.begin();
     // Gamepad1.begin();
     // Gamepad2.begin();
 }
@@ -77,35 +70,79 @@ void update_inputs_remote() {
         while (Wire.available()) {
             // This shenannigans here is because we're reading bytewise from
             // Wire.read but storing values into two-byte registers.
-            ((uint8_t*)remote_input_values)[j++] = Wire.read();
+            // ((uint8_t*)remote_input_values)[j++] = Wire.read();
+            Wire.read();
         }
         Serial.print("A0 on remote: ");
         Serial.println(remote_input_values[0]);
-        // Serial.println(remote_input_values[0]+remote_input_values[1]<<8);
+        Serial.println(remote_input_values[0]+remote_input_values[1]<<8);
     }
-    // TODO MVP map values through to HID outputs.
 }
 
-void update_axis_map() {
-    // This looks at the values seen in the local and remote inputs and determines
-    // whether these values should be mapped through to axes/buttons.
-    // If necessary it will call Gamepad[ 12].begin() to initialise extra gamepads.
+void handle_analog_value(uint16_t value) {
+    // This can be called multiple times during a loop. It manages
+    // assigning the provided value to the next available gamepad axis.
+    SingleGamepad_* gp;
+    if (mapped_a_count < AXIS_COUNT) {
+        gp = &Gamepad1;
+    } else if ((mapped_a_count >= 1*AXIS_COUNT) && (mapped_a_count < 2*AXIS_COUNT)) {
+        gp = &Gamepad2;
+    } else if ((mapped_a_count >= 2*AXIS_COUNT) && (mapped_a_count < 3*AXIS_COUNT)) {
+        gp = &Gamepad3;
+    } else if ((mapped_a_count >= 3*AXIS_COUNT) && (mapped_a_count < 4*AXIS_COUNT)) {
+        gp = &Gamepad4;
+    } else {
+        return;
+    }
+    switch (mapped_a_count) {
+        case 0:
+            gp->xAxis(value);
+            break;
+        case 1:
+            gp->yAxis(value);
+            break;
+        case 2:
+            gp->rxAxis(value);
+            break;
+        case 3:
+            gp->ryAxis(value);
+            break;
+    }
+    mapped_a_count++;
+}
 
+void handle_digital_value(bool value) {
+    SingleGamepad_* gp;
+    if (mapped_d_count < BTN_COUNT) {
+        gp = &Gamepad1;
+    } else if ((mapped_d_count >= 1*BTN_COUNT) && (mapped_d_count < 2*BTN_COUNT)) {
+        gp = &Gamepad2;
+    } else if ((mapped_d_count >= 2*BTN_COUNT) && (mapped_d_count < 3*BTN_COUNT)) {
+        gp = &Gamepad3;
+    } else if ((mapped_d_count >= 3*BTN_COUNT) && (mapped_d_count < 4*BTN_COUNT)) {
+        gp = &Gamepad4;
+    } else {
+        return;
+    }
+    gp->press(mapped_d_count%BTN_COUNT);
+
+    mapped_d_count++;
 }
 
 void update_HID() {
     // This updates the gamepad object with all available local and remote inputs
-    Gamepad.releaseAll();
+    Gamepad1.releaseAll();
 
-    for (i = 0; i < mapped_axis_count; i++) {
+    // for (i = 0; i < mapped_axis_count; i++) {
         // Gamepad1
-    }
+    // }
 
     // Gamepad.press(count);
 
     // Move x/y Axis to a new position (16bit)
-    Gamepad.xAxis(analogRead(A0));
-    Gamepad.yAxis(analogRead(A1));
+    // Gamepad1.xAxis(local_input_values[0]);
+    // Gamepad1.yAxis(local_input_values[1]);
+    // Gamepad1.rxAxis(remote_input_values[1]);
     // Gamepad.yAxis(random(0xFFFF));
 
     // Go through all dPad positions
@@ -122,11 +159,15 @@ void update_HID() {
 
     // Functions above only set the values.
     // This writes the report to the host.
-    Gamepad.write();
+    Gamepad1.write();
 }
 
 void loop_host() {
+    Gamepad1.releaseAll();
+    mapped_a_count = 0;
+    mapped_d_count = 0;
+    update_inputs_local();
     update_inputs_remote();
-    update_axis_map();
-    update_HID();
+    // update_HID();
+    Gamepad1.write();
 }

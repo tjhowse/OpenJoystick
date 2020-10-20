@@ -9,7 +9,14 @@ void normal_guest_i2c_receive(int byte_count) {
 void normal_guest_i2c_request() {
     if (mode != MODE_NORMAL) return;
     Serial.println("normal_guest_i2c_request");
-    Wire.write((const uint8_t*)local_input_values, INPUT_PIN_COUNT*2);
+    Wire.write(0x00);
+    // This is the new wire protocol to implement:
+    // Byte structure:
+    // 0 1 2 3 4 5 6 7
+    // A C C C C C C C
+    // If A is 0 the remainder of this byte and all of the next byte are an analogue value.
+    // If A is 1 the remainder of this byte and all of the next byte are binary values.
+    // Wire.write((const uint8_t*)local_input_values, INPUT_PIN_COUNT*2);
 }
 
 void learn_guest_i2c_receive_callback(int byte_count) {
@@ -49,5 +56,10 @@ void setup_guest() {
     Wire.begin(settings.addr);
 }
 
+void loop_learn_guest() {
+
+}
+
 void loop_guest() {
+    update_inputs_local();
 }

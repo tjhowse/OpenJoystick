@@ -5,33 +5,78 @@
 #include "HID-Project.h"
 
 // Settings library
-#include "settings.h"
+// #include "settings.h"
 
 #include "host.h"
 #include "guest.h"
 
 void update_inputs_local() {
     // This polls the local GPIO for the states of the inputs attached to this module.
+    uint8_t a_count = 0;
+    uint8_t d_count = 0;
     for (i = 0; i < INPUT_PIN_COUNT; i++) {
-        local_input_values[i] = analogRead(input_pins[i]);
+        if (settings.input_pin_type & (0x0001<<i)) {
+            // Read an analogue value
+            local_analogue_values[a_count++] = analogRead(input_pins[i]);
+            if (is_host) {
+                handle_analog_value(local_analogue_values[a_count-1]);
+            }
+        } else {
+            // Read a digital value
+            local_digital_values[d_count++] = digitalRead(input_pins[i]);
+            if (is_host) {
+                handle_digital_value(local_digital_values[d_count-1]);
+            }
+        }
     }
 }
 
 void update_mode() {
-    if (!digitalRead(PIN_BTN_MODE)) {
-        if (mode != MODE_LEARN) {
+    bool mode_btn_state = digitalRead(PIN_BTN_MODE);
+    if (!mode_btn_state && mode_btn_prev) {
+        // Falling edge
+        if (mode == MODE_LEARN) {
+            teardown_learn_mode();
+        } else {
             setup_learn_mode();
+        }
+    }
+    mode_btn_prev = mode_btn_state;
+}
+
+void learn_inputs() {
+    uint16_t temp;
+    for (i = 0; i < INPUT_PIN_COUNT; i++) {
+        temp = analogRead(input_pins[i]);
+        if ((temp > (ANALOG_PIN_MIN + ANALOG_DETECTION_BOUNDARY)) &&
+            (temp < (ANALOG_PIN_MAX - ANALOG_DETECTION_BOUNDARY))) {
+            // This pin is almost definitely either floating or analogue.
+            // Set its bit in settings.input_pin_type.
+            settings.input_pin_type |= (0x0001<<i);
+            if (i == 8) Serial.println(temp);
         }
     }
 }
 
 void setup_learn_mode() {
     mode = MODE_LEARN;
+    settings.input_pin_type = 0x0000;
     if (is_host) {
         setup_learn_mode_host();
     } else {
         setup_learn_mode_guest();
     }
+}
+
+void teardown_learn_mode() {
+    mode = MODE_NORMAL;
+    settings.save();
+    Serial.println("Leaving learn mode");
+    for (i = 0; i < INPUT_PIN_COUNT; i++) {
+        Serial.print((settings.input_pin_type & (0x0001<<i))>>i);
+        Serial.print(" ");
+    }
+    Serial.println();
 }
 
 void setup_pins() {
@@ -56,6 +101,7 @@ bool check_if_host() {
 void setup() {
     setup_pins();
     is_host = check_if_host();
+    mode_btn_prev = 1;
     settings.load();
     Serial.begin(115200);
     delay(1000);
@@ -67,7 +113,6 @@ void setup() {
 }
 
 void loop_normal() {
-    update_inputs_local();
     if (is_host) {
         loop_host();
     } else {
@@ -76,10 +121,11 @@ void loop_normal() {
 }
 
 void loop_learn() {
+    learn_inputs();
     if (is_host) {
         loop_learn_host();
     } else {
-        // All of the guest's learning is done inside the i2c callbacks.
+        loop_learn_guest();
     }
 }
 
