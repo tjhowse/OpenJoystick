@@ -45,7 +45,7 @@ void setup_host() {
     Gamepad1.begin();
     Gamepad2.begin();
     Gamepad3.begin();
-    Gamepad4.begin();
+    // Gamepad4.begin();
     // Gamepad1.begin();
     // Gamepad2.begin();
 }
@@ -55,47 +55,53 @@ void setup_learn_mode_host() {
     Serial.println("Host in learn mode");
 }
 
+void drain_bus() {
+    while (Wire.available()) {
+        Wire.read();
+    }
+}
+
 void update_inputs_remote() {
     // This is called if this module is the host module. It polls all the guest modules
     // for their present input states.
     uint8_t read;
     uint16_t buffer;
-    uint8_t nibble = 0;
+    uint8_t digital_input_count = 0;
     for (i = I2C_ADDRESS_ALLOCATION_START; i < next_i2c_address; i++) {
         Wire.requestFrom((uint8_t)i, (uint8_t)(INPUT_PIN_COUNT*2));
         buffer = 0;
 
         // Serial.println(Wire.available());
         while (Wire.available()) {
-            // We should be reading pairs of bytes.
             read = Wire.read();
-            if (nibble == 0) {
-                // First half
-                if (read == 0xFF) {
-                    continue;
-                }
-                buffer |= read<<8;
-                // Serial.print("First half: ");
-                // Serial.println(read);
-                // Serial.println(buffer);
-                nibble++;
-            } else {
-                // Second half
-                buffer |= read;
-                // Serial.print("twost half: ");
-                // Serial.println(read);
-
-                // Serial.println(buffer);
-                if (!(buffer & 0x8000)) {
-                    // This is an analogue value
+            buffer = 0;
+            if (read == 0xFF) {
+                // Message has ended, drain the bus.
+                drain_bus();
+            }
+            if (!bitRead(read, 7)) {
+                // This is the first byte of an analogue value.
+                buffer |= (read & 0x3F)<<8;
+                if (Wire.available() >= 1) {
+                    buffer |= Wire.read();
                     handle_analog_value(buffer);
-                } else {
-                    // This contains digital values
                 }
-                // Serial.print("     total: ");
-                // Serial.println(buffer);
-                buffer = 0;
-                nibble = 0;
+            } else {
+                // This is the signal byte of some digital values arriving
+                // next.
+                Serial.println("Got a digital signal");
+                digital_input_count = read & 0x3F;
+                if (Wire.available() >= 2) {
+                    buffer |= Wire.read()<<8;
+                    buffer |= Wire.read();
+                    Serial.println(buffer, BIN);
+                    for (j = 0; j < digital_input_count; j++) {
+                        handle_digital_value(bitRead(buffer, j));
+                    }
+                } else {
+                    // Protocol error. Drain the bus and bail.
+                    drain_bus();
+                }
             }
         }
     }
@@ -149,54 +155,28 @@ void handle_digital_value(bool value) {
     } else if ((mapped_d_count >= 2*BTN_COUNT) && (mapped_d_count < 3*BTN_COUNT)) {
         gp = &Gamepad3;
     } else if ((mapped_d_count >= 3*BTN_COUNT) && (mapped_d_count < 4*BTN_COUNT)) {
+        // I'm not sure if this actually works. Skip it to avoid weirdness.
+        return;
         gp = &Gamepad4;
     } else {
         return;
     }
-    gp->press(mapped_d_count%BTN_COUNT);
+    if (value) {
+        gp->press(mapped_d_count%BTN_COUNT);
+    }
 
     mapped_d_count++;
 }
 
-void update_HID() {
-    // This updates the gamepad object with all available local and remote inputs
-    Gamepad1.releaseAll();
-
-    // for (i = 0; i < mapped_axis_count; i++) {
-        // Gamepad1
-    // }
-
-    // Gamepad.press(count);
-
-    // Move x/y Axis to a new position (16bit)
-    // Gamepad1.xAxis(local_input_values[0]);
-    // Gamepad1.yAxis(local_input_values[1]);
-    // Gamepad1.rxAxis(remote_input_values[1]);
-    // Gamepad.yAxis(random(0xFFFF));
-
-    // Go through all dPad positions
-    // values: 0-8 (0==centered)
-    // static uint8_t dpad1 = GAMEPAD_DPAD_CENTERED;
-    // Gamepad.dPad1(dpad1++);
-    // if (dpad1 > GAMEPAD_DPAD_UP_LEFT)
-    //     dpad1 = GAMEPAD_DPAD_CENTERED;
-
-    // static int8_t dpad2 = GAMEPAD_DPAD_CENTERED;
-    // Gamepad.dPad2(dpad2--);
-    // if (dpad2 < GAMEPAD_DPAD_CENTERED)
-    //     dpad2 = GAMEPAD_DPAD_UP_LEFT;
-
-    // Functions above only set the values.
-    // This writes the report to the host.
-    Gamepad1.write();
-}
-
 void loop_host() {
     Gamepad1.releaseAll();
+    Gamepad2.releaseAll();
+    Gamepad3.releaseAll();
     mapped_a_count = 0;
     mapped_d_count = 0;
     update_inputs_local();
     update_inputs_remote();
-    // update_HID();
     Gamepad1.write();
+    Gamepad2.write();
+    Gamepad3.write();
 }

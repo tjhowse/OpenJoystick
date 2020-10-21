@@ -21,7 +21,7 @@
 
 // If an analog input reads further than this value from min or max
 // then it's deemed to be an analogue input.
-#define ANALOG_DETECTION_BOUNDARY 50
+#define ANALOG_DETECTION_BOUNDARY 100
 #define ANALOG_PIN_MAX 1023
 #define ANALOG_PIN_MIN 0
 
