@@ -13,6 +13,8 @@
 #define PIN_HOST 7
 
 #define LEARNING_I2C_ADDRESS 0x08
+#define DEFAULT_I2C_ADDRESS 0x70
+
 #define I2C_ADDRESS_ALLOCATION_START 0x10
 
 #define INPUT_PIN_COUNT 8
@@ -51,50 +53,63 @@ void handle_digital_value(bool);
 #define SETTINGS_SCHEMA 0x5A
 #define SETTINGS_ADDR_A 1
 #define SETTINGS_GUEST_COUNT_A 2
-#define SETTINGS_analog_input_mask_A 3 // and 4.
-#define SETTINGS_GUEST_ADDRS_A 1024
+#define SETTINGS_ANALOG_INPUT_MASK_A 3 // and 4.
+#define SETTINGS_DIGITAL_INPUT_MASK_A 5 // and 6.
 
 class Settings {
     public:
-        // Whether or not this class contains validly-loaded settings.
-        bool valid = false;
         // A guest module's I2C address. 0x00 on a host module.
         uint8_t addr;
         // How many guest modules do we know about?
         uint8_t guest_count;
-        // This stores the addresses of the guest modules we know about.
-        uint8_t* guest_addrs;
         // A bitmask that stores whether a pin is analogue (0) or digital (1)
         uint16_t analog_input_mask;
         uint16_t digital_input_mask;
         uint8_t local_a_input_count;
         uint8_t local_d_input_count;
 
+    void defaults() {
+        addr = DEFAULT_I2C_ADDRESS;
+        guest_count = 0;
+        analog_input_mask = 0;
+        digital_input_mask = 0;
+    }
+
     bool load() {
         // Load the settings from EEPROM into this class.
-        // Host module:
-        // - Guest I2C module I2C addresses,
-        // - Guest.Input to HID axis/button/dpad associations
-        // Guest module:
-        // - I2C bus addresses
-        // - GPIO to Input associations.
         if (SETTINGS_SCHEMA != EEPROM.read(SETTINGS_SETTINGS_SCHEMA_A)) {
-            // We don't recognise this EEPROM SETTINGS_SCHEMA, or it's corrupt. Abandon ship!
+            // We don't recognise this EEPROM SETTINGS_SCHEMA. Load defaults and save them.
+            defaults();
+            save();
             return false;
         }
         addr = EEPROM.read(SETTINGS_ADDR_A);
-        // guest_count = EEPROM.read(SETTINGS_GUEST_COUNT_A);
-        // guest_addrs = new uint8_t [guest_count];
-        // for (uint8_t i = 0; i < guest_count; i++) {
-        //     guest_addrs[i] = EEPROM.read(SETTINGS_GUEST_ADDRS_A+i);
-        // }
-        // valid = true;
+        guest_count = EEPROM.read(SETTINGS_GUEST_COUNT_A);
+        analog_input_mask = EEPROM.read(SETTINGS_ANALOG_INPUT_MASK_A);
+        analog_input_mask |= EEPROM.read(SETTINGS_ANALOG_INPUT_MASK_A+1)<<8;
+        digital_input_mask = EEPROM.read(SETTINGS_DIGITAL_INPUT_MASK_A);
+        digital_input_mask |= EEPROM.read(SETTINGS_DIGITAL_INPUT_MASK_A+1)<<8;
+        local_a_input_count = 0;
+        local_d_input_count = 0;
+        for (int i = 0; i < INPUT_PIN_COUNT; i++) {
+            if (bitRead(analog_input_mask, i)) {
+                local_a_input_count++;
+            }
+            if (bitRead(digital_input_mask, i)) {
+                local_d_input_count++;
+            }
+        }
         return true;
     }
     void save() {
         // Save the settings from this class into EEPROM.
-        // EEPROM.write(SETTINGS_ADDR_A, addr);
-        // EEPROM.write(SETTINGS_SETTINGS_SCHEMA_A, SETTINGS_SCHEMA);
+        EEPROM.write(SETTINGS_ADDR_A, addr);
+        EEPROM.write(SETTINGS_GUEST_COUNT_A, guest_count);
+        EEPROM.write(SETTINGS_ANALOG_INPUT_MASK_A, lowByte(analog_input_mask));
+        EEPROM.write(SETTINGS_ANALOG_INPUT_MASK_A+1, highByte(analog_input_mask));
+        EEPROM.write(SETTINGS_DIGITAL_INPUT_MASK_A, lowByte(digital_input_mask));
+        EEPROM.write(SETTINGS_DIGITAL_INPUT_MASK_A+1, highByte(digital_input_mask));
+        EEPROM.write(SETTINGS_SETTINGS_SCHEMA_A, SETTINGS_SCHEMA);
     }
 };
 

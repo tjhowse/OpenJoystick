@@ -95,10 +95,10 @@ void teardown_learn_mode() {
     mode = MODE_NORMAL;
     Serial.println("Leaving learn mode");
     for (i = 0; i < INPUT_PIN_COUNT; i++) {
-        if ((settings.analog_input_mask & (0x0001<<i))) {
+        if (bitRead(settings.analog_input_mask, i)) {
             settings.local_a_input_count++;
         }
-        if ((settings.digital_input_mask & (0x0001<<i))) {
+        if (bitRead(settings.digital_input_mask, i)) {
             settings.local_d_input_count++;
         }
     }
@@ -136,6 +136,7 @@ bool check_if_host() {
 void setup() {
     setup_pins();
     is_host = check_if_host();
+    mode = MODE_NORMAL;
     mode_btn_prev = 1;
     settings.load();
     Serial.begin(115200);

@@ -8,8 +8,6 @@
 // We're only using the four 16-bit axes here.
 #define AXIS_COUNT 4
 
-uint8_t next_i2c_address = I2C_ADDRESS_ALLOCATION_START;
-
 uint8_t mapped_a_count = 0;
 uint8_t mapped_d_count = 0;
 
@@ -17,21 +15,18 @@ void loop_learn_host() {
     uint8_t error;
     // Attempt to assign 0x01 a unique address.
     Wire.beginTransmission(LEARNING_I2C_ADDRESS);
-    int i = Wire.write(next_i2c_address);
-    // Serial.print("Writing address: ");
-    // Serial.print(next_i2c_address);
-    // Serial.print(" : ");
-    // Serial.println(i);
+    int i = Wire.write(I2C_ADDRESS_ALLOCATION_START+settings.guest_count);
     error = Wire.endTransmission();
     if (!error) {
-        // We got a response from a guest in learn mode.
+        // We got a response from a guest that was in learn mode.
         // Attempt to connect to it at its assigned address.
         delay(500);
-        Wire.beginTransmission(next_i2c_address);
+        Wire.beginTransmission(I2C_ADDRESS_ALLOCATION_START+settings.guest_count);
         error = Wire.endTransmission();
         if (!error) {
             Serial.print("Host assigned an address: ");
-            Serial.println(next_i2c_address++);
+            Serial.println(I2C_ADDRESS_ALLOCATION_START+settings.guest_count);
+            settings.guest_count++;
         }
     }
 }
@@ -44,9 +39,6 @@ void setup_host() {
     Gamepad1.begin();
     Gamepad2.begin();
     Gamepad3.begin();
-    // Gamepad4.begin();
-    // Gamepad1.begin();
-    // Gamepad2.begin();
 }
 
 void setup_learn_mode_host() {
@@ -63,10 +55,11 @@ void drain_bus() {
 void update_inputs_remote() {
     // This is called if this module is the host module. It polls all the guest modules
     // for their present input states.
+    // Serial.print("update_inputs_remote: ");
     uint8_t read;
     uint16_t buffer;
     uint8_t digital_input_count = 0;
-    for (i = I2C_ADDRESS_ALLOCATION_START; i < next_i2c_address; i++) {
+    for (i = I2C_ADDRESS_ALLOCATION_START; i < I2C_ADDRESS_ALLOCATION_START+settings.guest_count; i++) {
         Wire.requestFrom((uint8_t)i, (uint8_t)(INPUT_PIN_COUNT*2));
         buffer = 0;
 
@@ -135,11 +128,6 @@ void handle_analog_value(uint16_t value) {
             gp->ryAxis(value);
             break;
     }
-    // Serial.print("Axis: ");
-    // Serial.print(mapped_a_count);
-    // Serial.print("Value: ");
-    // Serial.print(value);
-    // Serial.println();
     mapped_a_count++;
 }
 
@@ -163,14 +151,10 @@ void handle_digital_value(bool value) {
     } else {
         gp->release(mapped_d_count%BTN_COUNT);
     }
-
     mapped_d_count++;
 }
 
 void loop_host() {
-    // Gamepad1.releaseAll();
-    // Gamepad2.releaseAll();
-    // Gamepad3.releaseAll();
     mapped_a_count = 0;
     mapped_d_count = 0;
     update_inputs_local();
