@@ -17,12 +17,11 @@ void loop_learn_host() {
     uint8_t error;
     // Attempt to assign 0x01 a unique address.
     Wire.beginTransmission(LEARNING_I2C_ADDRESS);
-    Serial.println("Host sent an addresssssssssssss");
     int i = Wire.write(next_i2c_address);
-    Serial.print("Writing address: ");
-    Serial.print(next_i2c_address);
-    Serial.print(" : ");
-    Serial.println(i);
+    // Serial.print("Writing address: ");
+    // Serial.print(next_i2c_address);
+    // Serial.print(" : ");
+    // Serial.println(i);
     error = Wire.endTransmission();
     if (!error) {
         // We got a response from a guest in learn mode.
@@ -89,12 +88,10 @@ void update_inputs_remote() {
             } else {
                 // This is the signal byte of some digital values arriving
                 // next.
-                Serial.println("Got a digital signal");
                 digital_input_count = read & 0x3F;
                 if (Wire.available() >= 2) {
                     buffer |= Wire.read()<<8;
                     buffer |= Wire.read();
-                    Serial.println(buffer, BIN);
                     for (j = 0; j < digital_input_count; j++) {
                         handle_digital_value(bitRead(buffer, j));
                     }
@@ -163,15 +160,17 @@ void handle_digital_value(bool value) {
     }
     if (value) {
         gp->press(mapped_d_count%BTN_COUNT);
+    } else {
+        gp->release(mapped_d_count%BTN_COUNT);
     }
 
     mapped_d_count++;
 }
 
 void loop_host() {
-    Gamepad1.releaseAll();
-    Gamepad2.releaseAll();
-    Gamepad3.releaseAll();
+    // Gamepad1.releaseAll();
+    // Gamepad2.releaseAll();
+    // Gamepad3.releaseAll();
     mapped_a_count = 0;
     mapped_d_count = 0;
     update_inputs_local();
