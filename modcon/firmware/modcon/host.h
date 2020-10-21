@@ -64,31 +64,42 @@ void setup_learn_mode_host() {
 void update_inputs_remote() {
     // This is called if this module is the host module. It polls all the guest modules
     // for their present input states.
+    uint8_t read;
     uint16_t buffer;
     uint8_t nibble = 0;
     for (i = I2C_ADDRESS_ALLOCATION_START; i < next_i2c_address; i++) {
         Wire.requestFrom((uint8_t)i, (uint8_t)(INPUT_PIN_COUNT*2));
         buffer = 0;
+
+        // Serial.println(Wire.available());
         while (Wire.available()) {
             // We should be reading pairs of bytes.
+            read = Wire.read();
             if (nibble == 0) {
                 // First half
-                // TODO Still something funky here.
-                buffer |= Wire.read()<<8;
+                if (read == 0xFF) {
+                    continue;
+                }
+                buffer |= read<<8;
                 // Serial.print("First half: ");
+                // Serial.println(read);
                 // Serial.println(buffer);
                 nibble++;
             } else {
                 // Second half
-                buffer |= Wire.read();
+                buffer |= read;
                 // Serial.print("twost half: ");
+                // Serial.println(read);
+
                 // Serial.println(buffer);
-                if (!(buffer & 0x80)) {
+                if (!(buffer & 0x8000)) {
                     // This is an analogue value
                     handle_analog_value(buffer);
                 } else {
                     // This contains digital values
                 }
+                // Serial.print("     total: ");
+                // Serial.println(buffer);
                 buffer = 0;
                 nibble = 0;
             }
@@ -107,6 +118,8 @@ void handle_analog_value(uint16_t value) {
     } else if ((mapped_a_count >= 2*AXIS_COUNT) && (mapped_a_count < 3*AXIS_COUNT)) {
         gp = &Gamepad3;
     } else if ((mapped_a_count >= 3*AXIS_COUNT) && (mapped_a_count < 4*AXIS_COUNT)) {
+        // I'm not sure if this actually works. Skip it to avoid weirdness.
+        return;
         gp = &Gamepad4;
     } else {
         return;
@@ -125,6 +138,11 @@ void handle_analog_value(uint16_t value) {
             gp->ryAxis(value);
             break;
     }
+    // Serial.print("Axis: ");
+    // Serial.print(mapped_a_count);
+    // Serial.print("Value: ");
+    // Serial.print(value);
+    // Serial.println();
     mapped_a_count++;
 }
 
