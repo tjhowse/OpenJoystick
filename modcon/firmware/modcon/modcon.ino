@@ -14,18 +14,23 @@ void update_inputs_local() {
     // This polls the local GPIO for the states of the inputs attached to this module.
     uint8_t a_count = 0;
     uint8_t d_count = 0;
+    local_digital_values = 0x0000;
     for (i = 0; i < INPUT_PIN_COUNT; i++) {
-        if (settings.input_pin_type & (0x0001<<i)) {
+        if (settings.analog_input_mask & (0x0001<<i)) {
             // Read an analogue value
             local_analog_values[a_count++] = analogRead(input_pins[i]);
             if (is_host) {
                 handle_analog_value(local_analog_values[a_count-1]);
             }
-        } else {
+        } else if (settings.digital_input_mask & (0x0001<<i)) {
             // Read a digital value
-            local_digital_values[d_count++] = digitalRead(input_pins[i]);
+            if (digitalRead(input_pins[i])) {
+                bitSet(local_digital_values, d_count++);
+            } else {
+                bitClear(local_digital_values, d_count++);
+            }
             if (is_host) {
-                handle_digital_value(local_digital_values[d_count-1]);
+                handle_digital_value(bitRead(local_digital_values, d_count-1));
             }
         }
     }
@@ -51,19 +56,34 @@ void learn_inputs() {
         if ((temp > (ANALOG_PIN_MIN + ANALOG_DETECTION_BOUNDARY)) &&
             (temp < (ANALOG_PIN_MAX - ANALOG_DETECTION_BOUNDARY))) {
             // This pin is almost definitely either floating or analogue.
-            // Set its bit in settings.input_pin_type.
-            settings.input_pin_type |= (0x0001<<i);
-            if (i == 8) Serial.println(temp);
+            // Set its bit in settings.analog_input_mask.
+            settings.analog_input_mask |= (0x0001<<i);
+        }
+        if (!(settings.analog_input_mask & (0x0001<<i)) &&
+            (((local_analog_values[i] > (ANALOG_PIN_MAX - ANALOG_DETECTION_BOUNDARY)) &&
+             (                  temp < (ANALOG_PIN_MIN + ANALOG_DETECTION_BOUNDARY))) ||
+            ((                  temp > (ANALOG_PIN_MAX - ANALOG_DETECTION_BOUNDARY)) &&
+             (local_analog_values[i] < (ANALOG_PIN_MIN + ANALOG_DETECTION_BOUNDARY))))) {
+            // Oof.
+            // This detects whether an input that was previously close to max has gone close to min
+            // or it was close to min and has gone to max.
+            settings.digital_input_mask |= (0x0001<<i);
         }
         // This should also somehow detect a digital input...
+        local_analog_values[i] = temp;
     }
 }
 
 void setup_learn_mode() {
     mode = MODE_LEARN;
-    settings.input_pin_type = 0x0000;
+    settings.analog_input_mask = 0x0000;
+    settings.digital_input_mask = 0x0000;
     settings.local_a_input_count = 0;
     settings.local_d_input_count = 0;
+
+    for (i = 0; i < INPUT_PIN_COUNT; i++) {
+        local_analog_values[i] = analogRead(input_pins[i]);
+    }
     if (is_host) {
         setup_learn_mode_host();
     } else {
@@ -75,15 +95,22 @@ void teardown_learn_mode() {
     mode = MODE_NORMAL;
     Serial.println("Leaving learn mode");
     for (i = 0; i < INPUT_PIN_COUNT; i++) {
-        if ((settings.input_pin_type & (0x0001<<i))) {
+        if ((settings.analog_input_mask & (0x0001<<i))) {
             settings.local_a_input_count++;
         }
-        Serial.print((settings.input_pin_type & (0x0001<<i))>>i);
-        Serial.print(" ");
+        if ((settings.digital_input_mask & (0x0001<<i))) {
+            settings.local_d_input_count++;
+        }
     }
+    Serial.print("A: ");
+    Serial.println(settings.analog_input_mask, BIN);
+    Serial.print("D: ");
+    Serial.println(settings.digital_input_mask, BIN);
     Serial.println();
     Serial.print("Total analogue axes: ");
     Serial.println(settings.local_a_input_count);
+    Serial.print("Total digital axes: ");
+    Serial.println(settings.local_d_input_count);
     settings.save();
 }
 

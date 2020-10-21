@@ -19,6 +19,12 @@
 
 #define MODE_DEBOUNCE_MS 500
 
+// If an analog input reads further than this value from min or max
+// then it's deemed to be an analogue input.
+#define ANALOG_DETECTION_BOUNDARY 50
+#define ANALOG_PIN_MAX 1023
+#define ANALOG_PIN_MIN 0
+
 bool is_host = false;
 volatile uint8_t mode = MODE_NORMAL;
 
@@ -29,8 +35,7 @@ uint8_t i, j;
 // The ADCs on the atmel32u4 are 10-bit, so allocate 16 bits per input.
 // If this ever gets bigger than 32B we can't put it through I2C in one message.
 uint16_t local_analog_values[INPUT_PIN_COUNT];
-// TODO OPTIMISATION if we run out of ram this is shockingly inefficient
-uint16_t local_digital_values[INPUT_PIN_COUNT];
+uint16_t local_digital_values;
 
 uint32_t last_blink_ms = 0;
 bool blink_prev;
@@ -46,7 +51,7 @@ void handle_digital_value(bool);
 #define SETTINGS_SCHEMA 0x5A
 #define SETTINGS_ADDR_A 1
 #define SETTINGS_GUEST_COUNT_A 2
-#define SETTINGS_INPUT_PIN_TYPE_A 3 // and 4.
+#define SETTINGS_analog_input_mask_A 3 // and 4.
 #define SETTINGS_GUEST_ADDRS_A 1024
 
 class Settings {
@@ -60,7 +65,8 @@ class Settings {
         // This stores the addresses of the guest modules we know about.
         uint8_t* guest_addrs;
         // A bitmask that stores whether a pin is analogue (0) or digital (1)
-        uint16_t input_pin_type;
+        uint16_t analog_input_mask;
+        uint16_t digital_input_mask;
         uint8_t local_a_input_count;
         uint8_t local_d_input_count;
 

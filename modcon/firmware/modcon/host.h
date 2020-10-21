@@ -1,11 +1,5 @@
 #import "modcon.h"
 
-// If an analog input reads further than this value from min or max
-// then it's deemed to be an analogue input.
-#define ANALOG_DETECTION_BOUNDARY 50
-#define ANALOG_PIN_MAX 1023
-#define ANALOG_PIN_MIN 0
-
 // These numbers are per-gamepad. We have three gamepads:
 // Gamepad1, Gamepad2, Gamepad3 and Gamepad4.
 #define GAMEPAD_COUNT 4
