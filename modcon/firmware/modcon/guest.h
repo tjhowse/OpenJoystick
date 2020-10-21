@@ -18,9 +18,9 @@ void normal_guest_i2c_request() {
     // Wire.write((const uint8_t*)local_input_values, INPUT_PIN_COUNT*2);
     // Might need some kind of mutex here.
     // TODO BUG local_a_input_count is inaccurate here
-    for (int k; k < settings.local_a_input_count; k++) {
-        Wire.write((uint8_t)(local_analog_values[k]&(0xEF00)) >> 8);
-        Wire.write((uint8_t)(local_analog_values[k]&(0x00FF)));
+    for (int k = 0; k < settings.local_a_input_count; k++) {
+        Wire.write((uint8_t)((local_analog_values[k] & 0xEF00) >> 8));
+        Wire.write((uint8_t)(local_analog_values[k] & 0x00FF));
     }
     // TODO write the digital stuff too.
 }

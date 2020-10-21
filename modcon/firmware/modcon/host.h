@@ -83,7 +83,7 @@ void update_inputs_remote() {
                 buffer |= Wire.read();
                 // Serial.print("twost half: ");
                 // Serial.println(buffer);
-                if (!(buffer & 0x10)) {
+                if (!(buffer & 0x80)) {
                     // This is an analogue value
                     handle_analog_value(buffer);
                 } else {

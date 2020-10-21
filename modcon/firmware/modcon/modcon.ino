@@ -80,6 +80,7 @@ void teardown_learn_mode() {
         }
         Serial.print((settings.input_pin_type & (0x0001<<i))>>i);
         Serial.print(" ");
+        Serial.print(settings.local_a_input_count);
     }
     settings.save();
     Serial.println();
