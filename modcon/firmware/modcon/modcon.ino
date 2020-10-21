@@ -14,7 +14,7 @@ void update_inputs_local() {
     // This polls the local GPIO for the states of the inputs attached to this module.
     uint8_t a_count = 0;
     uint8_t d_count = 0;
-    local_digital_values = 0x0000;
+    // local_digital_values = 0x0000;
     for (i = 0; i < INPUT_PIN_COUNT; i++) {
         if (settings.analog_input_mask & (0x0001<<i)) {
             // Read an analogue value
@@ -57,9 +57,10 @@ void learn_inputs() {
             (temp < (ANALOG_PIN_MAX - ANALOG_DETECTION_BOUNDARY))) {
             // This pin is almost definitely either floating or analogue.
             // Set its bit in settings.analog_input_mask.
-            settings.analog_input_mask |= (0x0001<<i);
+            bitSet(settings.analog_input_mask, i);
+            bitClear(settings.digital_input_mask, i);
         }
-        if (!(settings.analog_input_mask & (0x0001<<i)) &&
+        if (!bitRead(settings.analog_input_mask,i) &&
             (((local_analog_values[i] > (ANALOG_PIN_MAX - ANALOG_DETECTION_BOUNDARY)) &&
              (                  temp < (ANALOG_PIN_MIN + ANALOG_DETECTION_BOUNDARY))) ||
             ((                  temp > (ANALOG_PIN_MAX - ANALOG_DETECTION_BOUNDARY)) &&
@@ -67,9 +68,8 @@ void learn_inputs() {
             // Oof.
             // This detects whether an input that was previously close to max has gone close to min
             // or it was close to min and has gone to max.
-            settings.digital_input_mask |= (0x0001<<i);
+            bitSet(settings.digital_input_mask, i);
         }
-        // This should also somehow detect a digital input...
         local_analog_values[i] = temp;
     }
 }
