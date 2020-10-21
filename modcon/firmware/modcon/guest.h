@@ -22,6 +22,8 @@ void normal_guest_i2c_request() {
         Wire.write((uint8_t)((local_analog_values[k] & 0x3F00) >> 8));
         Wire.write((uint8_t)(local_analog_values[k] & 0x00FF));
     }
+    // TODO the low nibble of the high byte contains the number of digital
+    // inputs described, starting from LSB, in the following byte.
     Wire.write(highByte(local_digital_values) | 0x80);
     Wire.write(lowByte(local_digital_values));
 }
