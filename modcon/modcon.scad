@@ -192,12 +192,12 @@ module lid_HW997(grooves = 1) {
 
 10a_switch_r = 6;
 10a_switch_x = 20;
-10a_switch_clearance_x = 1;
+10a_switch_clearance_x = 0.5;
 10a_switch_y = 35;
 10a_switch_z = 30;
 module 10a_Switch() {
     cylinder(r=10a_switch_r, h=100);
-    #translate([0,0,wt+10a_switch_z/2]) cube([10a_switch_x, 10a_switch_y, 10a_switch_z], center=true);
+    translate([0,0,wt+10a_switch_z/2]) cube([10a_switch_x, 10a_switch_y, 10a_switch_z], center=true);
 }
 
 // lid_6_10a_switch is a variant of the lid with holes to mount six 10A switches in a grid.
@@ -222,8 +222,8 @@ module assembled() {
     base();
     translate([0,unit_xy,unit_z])
         rotate([180,0,0])
-            lid(0);
-            // lid_6_10a_switch(0);
+            // lid(0);
+            lid_6_10a_switch(0);
 }
 // join_pin_clip();
 // translate([20,0,0]) join_pin();
@@ -234,7 +234,7 @@ module assembled() {
 lid_6_10a_switch(0);
 // difference() {
 //     assembled();
-//     translate([unit_xy/2,0,0]) cube([100,100,100]);
+//     translate([unit_xy/2,0,-unit_z/2]) cube([100,100,unit_z]);
 // }
 // intersection() {
 //     base();
